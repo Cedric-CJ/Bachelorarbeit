@@ -1,0 +1,8 @@
+Vorstellung:
+1. Stückliste wird ins system gegeben.
+2. nach kurzer Zeit kommt eine ausgearbeitete Liste welche Lieferanten angefragt werden für bestimmte Materialien aus der Stückliste (mit allen Infos für die Lieferanten)
+3. Die Liste+Mails werden vom Geschäftsführer geprüft, sodass danach die Anfrage E-Mails rausgeschickt werden können.
+4. Nach bestimmter Zeit werden alle eingegangenden Mails verglichen. Wer bietet die Materialien am günstigsten an (+ Liefer- und Zusatzkosten).
+4.1 Diese Übersicht bekommt der Geschäftsführer und soll bestätigen oder anpassen, was bei welchem Lieferanten bestellt werden soll.
+4.2 aus den Infos kann ein Angebot geschrieben werden, welches an den Kunden als Mail gesendet wird. (auch hier vorm versand der Mail soll der Geschäftsführer diese bestätigen)
+4.3 Wenn Kunde dem Angebot zustimmt sollen die bestell Mails automatisch erstellt werden. Vorm abschicken wieder vom Geschäftsführer bestätigt werden.
