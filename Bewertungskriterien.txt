@@ -1,0 +1,67 @@
+------------------------------------------------------------
+TEIL 1 - IST/SOLL-PROZESSVERGLEICH (ergänzend zur FMEA)
+------------------------------------------------------------
+Hinweis: Die qualitative Risiko-/Qualitätsverbesserung ist
+bereits über die FMEA (RPZ IST vs. RPZ neu) abgedeckt.
+Hier nur die strukturellen Kennzahlen, die direkt aus den
+BPMN-Modellen abzählbar sind:
+
+1. Anzahl Prozessschritte gesamt (IST vs. SOLL)
+2. Anzahl manueller Eingriffe / Medienbrüche / Systemwechsel
+3. Bus-Faktor: Abhängigkeit vom Geschäftsinhaber (Schwachstelle B)
+4. Standardisierungsgrad (läuft der Ablauf immer gleich?)
+
+
+------------------------------------------------------------
+TEIL 2 - TOOLVERGLEICH n8n vs. Zapier (Nutzwertanalyse)
+------------------------------------------------------------
+Skala 0-4 (0 = nicht abbildbar, 4 = nativ/komfortabel)
+Teilnutzen = Gewicht x (Score/4); Gesamtnutzwert = Summe
+Pro Score eine Primärqülle mit Abrufdatum hinterlegen.
+KEINE K.O.-Kriterien (verzerrt das Ergebnis).
+
+Hauptkriterien (geordnet nach Gewicht, Variante A - verbindlich):
+
+1. Funktionale Abdeckung .................. 25 %
+   - Abbildung AF1-AF20 + NF1-NF5 (Evidenzbasis: x von 25)
+   - Datei-/Tabellenverarbeitung, Logik/Berechnung, Warten
+
+2. Human-in-the-Loop / Freigabe ........... 20 %
+   - KP1-KP4: Approve/Reject, Pausieren/Fortsetzen
+   - Nachvollziehbarkeit der Freigabeentscheidungen
+
+3. Usability / Wartbarkeit ................ 20 %
+   - Low-Code-Grad / Einstiegshürde
+   - änderbarkeit, Debugging, Monitoring
+   - Wartungsaufwand im Betrieb
+   (enthält: Custom Code, Logging, Doku-Qualität, Support,
+    Vendor-Lock-in - als Begründung, nicht als Extra-Score)
+
+4. Integration ............................ 15 %
+   - Verfügbare Konnektoren
+   - API-/Webhook-Flexibilität, HTTP/Custom als Fallback
+
+5. Datenschutz / Sicherheit (DSGVO) ....... 10 %
+   - Cloud-only vs. self-hosted, regionale Datenhaltung
+   - Zugriffskontrolle / Rollen / Rechte
+
+6. Kosten / Wirtschaftlichkeit ............ 10 %
+   - Kostenmodell (Task vs. Execution vs. self-hosted)
+   - Skalierungs-/Betriebskosten (TCO über 12 Monate)
+
+   SUMME = 100 %
+
+
+------------------------------------------------------------
+ENTFERNT (mit Grund) - bewusst NICHT verwenden
+------------------------------------------------------------
+- Bearbeitungszeit/Personalbindung in Minuten, Wartezeiten:
+  keine Messdaten vorhanden -> nicht belegbar.
+- Fehleranfälligkeit / Vollständigkeit beim 1. Versuch /
+  Nachvollziehbarkeit als Teil-1-Kriterien:
+  bereits über FMEA (A, E, F) abgedeckt -> Doppelung.
+- Unterkriterien 2.3 als eigene Scores: in den 6 Kriterien
+  enthalten -> Doppelzählung.
+- K.O.-/Mindestanforderungslogik: würde Zapier automatisch
+  ausschliessen -> Bias-Risiko.
+- Gewichtung Variante B: widerspricht Variante A -> Inkonsistenz.

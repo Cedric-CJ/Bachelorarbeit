@@ -1,0 +1,242 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+% babel-Sprachpaket: erfordert texlive-langeuropean (sudo pacman -S texlive-langeuropean)
+% Bis zur Installation: deutsche Bezeichnungen manuell gesetzt (siehe unten)
+%\usepackage[ngerman]{babel}
+\usepackage{csquotes}
+\usepackage{geometry}
+\usepackage{booktabs}
+\PassOptionsToPackage{hyphens}{url}
+\usepackage{hyperref}
+\usepackage[style=authoryear, backend=biber, sorting=nyt]{biblatex}
+\addbibresource{Quellen/BA/BA.bib}
+
+\geometry{left=3cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+\renewcommand{\baselinestretch}{1.35}\selectfont
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+\hypersetup{hidelinks}
+\urlstyle{same}
+\sloppy
+\setlength{\emergencystretch}{2em}
+\hbadness=10000
+\hfuzz=3pt
+\vfuzz=3pt
+
+% Deutsche Bezeichnungen (manuell bis texlive-langeuropean installiert ist)
+\renewcommand{\contentsname}{Inhaltsverzeichnis}
+\renewcommand{\listfigurename}{Abbildungsverzeichnis}
+\renewcommand{\listtablename}{Tabellenverzeichnis}
+
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{2}
+\renewcommand{\thesection}{\arabic{section}.}
+\renewcommand{\thesubsection}{\thesection\arabic{subsection}.}
+
+
+\begin{document}
+
+
+\pagenumbering{roman}
+
+\section*{Kurzfassung (Deutsch)}
+\addcontentsline{toc}{section}{Kurzfassung (Deutsch)}
+Kurzbeschreibung des Vorhabens in 5--8 Sätzen: Thema, Ziel, Methode, erwartete Ergebnisse.
+
+\section*{Abstract (English)}
+\addcontentsline{toc}{section}{Abstract (English)}
+Short summary in English (5--8 sentences): topic, objective, method, expected results.
+
+\clearpage
+\tableofcontents
+\clearpage
+
+\listoffigures
+\addcontentsline{toc}{section}{Abbildungsverzeichnis}
+\clearpage
+
+\listoftables
+\addcontentsline{toc}{section}{Tabellenverzeichnis}
+\clearpage
+
+\section*{Abkürzungsverzeichnis}
+\addcontentsline{toc}{section}{Abkürzungsverzeichnis}
+\begin{tabular}{@{}ll@{}}
+    \textbf{Abkürzung} & \textbf{Bedeutung} \\
+    \midrule
+    BPMN & Business Process Model and Notation \\
+    BPA & Business Process Automation \\
+    KMU & Kleine und mittlere Unternehmen \\
+    RPA & Robotic Process Automation \\
+    WS & Workflow System \\
+\end{tabular}
+
+\clearpage
+\pagenumbering{arabic}
+
+% --- Hauptteil ---
+\section{Einleitung}
+\subsection{Motivation und Relevanz}
+\begin{itemize}
+    \item Empfohlener Umfang in der Bachelorarbeit: ca. 0,75--1,0 Seiten.
+\end{itemize}
+
+\subsection{Zielsetzung und Abgrenzung}
+\begin{itemize}
+    \item Empfohlener Umfang in der Bachelorarbeit: ca. 0,75--1,0 Seiten.
+\end{itemize}
+
+\subsection{Forschungsfragen und Aufbau}
+\begin{itemize}
+    \item Empfohlener Umfang in der Bachelorarbeit: ca. 0,5--0,75 Seiten.
+\end{itemize}
+
+\section{Methodik}
+\subsection{Design-Science-Ansatz}
+\begin{itemize}
+    \item Empfohlener Umfang in der Bachelorarbeit: ca. 1,0--1,5 Seiten.
+\end{itemize}
+
+\subsection{Erhebung des IST-Prozesses durch Experteninterview}
+\begin{itemize}
+    \item Empfohlener Umfang in der Bachelorarbeit: ca. 1,0--1,5 Seiten.
+\end{itemize}
+
+\subsection{Bewertungsmethodik: Kriterienliste und Nutzwertanalyse}
+\begin{itemize}
+    \item Empfohlener Umfang in der Bachelorarbeit: ca. 1,5--2,0 Seiten.
+\end{itemize}
+
+\section{Theoretische Grundlagen}
+\subsection{Low-Code und Workflow-Systeme (BPM/BPA)}
+\begin{itemize}
+    \item Empfohlener Umfang in der Bachelorarbeit: ca. 1,5--2,0 Seiten.
+\end{itemize}
+
+\subsection{Kriterien für automationsgeeignete Prozesse}
+\begin{itemize}
+    \item Empfohlener Umfang in der Bachelorarbeit: ca. 1,0--1,5 Seiten.
+\end{itemize}
+
+\subsection{n8n: Architektur und Einsatzgebiete}
+\begin{itemize}
+    \item Empfohlener Umfang in der Bachelorarbeit: ca. 1,0--1,5 Seiten.
+\end{itemize}
+
+\subsection{Zapier als proprietäre Vergleichslösung}
+\begin{itemize}
+    \item Empfohlener Umfang in der Bachelorarbeit: ca. 1,0--1,5 Seiten.
+\end{itemize}
+
+\subsection{Bewertungs- und Vergleichskriterien}
+\begin{itemize}
+    \item Empfohlener Umfang in der Bachelorarbeit: ca. 1,5--2,0 Seiten.
+\end{itemize}
+
+\section{Analyse des Praxisfalls}
+\subsection{Unternehmenskontext}
+Das betrachtete Handwerksunternehmen hat weniger als zehn Mitarbeiter*innen und möchte den Bestellprozess in der Materialbeschaffung künftig weitgehend automatisieren. Der Untersuchungsbereich dieser Arbeit umfasst den Prozess von der Bedarfsmeldung auf Basis der Stückliste über die Materialsuche und die Anfrage möglicher Mengenrabatte bis zur Bestellfreigabe. Derzeit werden diese Schritte von dem verantwortlichen Geschäftsinhaber überwiegend manuell und mit hohem Zeitaufwand durchgeführt. Zur Erhebung des IST-Prozesses wird ein leitfadengestütztes Experteninterview eingesetzt. Ziel ist es, Schwachstellen, Medienbrüche und zeitintensive Teilschritte systematisch zu erfassen, um darauf aufbauend einen automatisierten Soll-Prozess zu entwickeln. n8n wird dabei als aus der SOLL-Modellierung abgeleitete Arbeitshypothese behandelt; der dokumentationsbasierte Vergleich mit Zapier prüft explizit, ob diese Vorauswahl gegenüber einer proprietären Referenzlösung Bestand hat. Der Vergleich mit Zapier erfolgt in dieser Arbeit nicht auf Basis einer prototypischen Implementierung, sondern auf Grundlage von Literatur, Herstellerdokumentation und dokumentierten Praxisberichten. Dadurch wird kein vollsymmetrischer Implementierungsvergleich angestrebt, sondern eine theoriebasierte Einordnung von Zapier gegenüber der praktisch erprobten Lösung n8n.
+\begin{itemize}
+    \item Empfohlener Umfang in der Bachelorarbeit: ca. 1,0--1,5 Seiten.
+\end{itemize}
+
+\subsection{Prozessabgrenzung und Begründung}
+\begin{itemize}
+    \item Empfohlener Umfang in der Bachelorarbeit: ca. 0,75--1,25 Seiten.
+\end{itemize}
+
+\subsection{Erhebung, Dokumentation und BPMN-Modellierung des IST-Prozesses}
+\begin{itemize}
+    \item Empfohlener Umfang in der Bachelorarbeit: ca. 2,0--3,0 Seiten.
+\end{itemize}
+
+\subsection{Schwachstellen und Anforderungen an den Soll-Prozess}
+\begin{itemize}
+    \item Empfohlener Umfang in der Bachelorarbeit: ca. 2,0--3,0 Seiten.
+\end{itemize}
+
+\section{Konzept}
+\subsection{BPMN Soll-Modell}
+\begin{itemize}
+    \item Empfohlener Umfang in der Bachelorarbeit: ca. 1,5--2,0 Seiten.
+\end{itemize}
+
+\subsection{Lösungsarchitektur in n8n}
+\begin{itemize}
+    \item Empfohlener Umfang in der Bachelorarbeit: ca. 1,0--1,5 Seiten.
+\end{itemize}
+
+\subsection{Abgrenzung zur Zapier-Umsetzung}
+\begin{itemize}
+    \item Empfohlener Umfang in der Bachelorarbeit: ca. 0,75--1,0 Seiten.
+\end{itemize}
+
+\section{Umsetzung}
+\subsection{Technisches Setup}
+\begin{itemize}
+    \item Empfohlener Umfang in der Bachelorarbeit: ca. 0,75--1,25 Seiten.
+\end{itemize}
+
+\subsection{Prototypische Umsetzung in n8n}
+\begin{itemize}
+    \item Empfohlener Umfang in der Bachelorarbeit: ca. 2,0--3,0 Seiten.
+\end{itemize}
+
+\subsection{Tests und Fehlerbehandlung}
+\begin{itemize}
+    \item Empfohlener Umfang in der Bachelorarbeit: ca. 1,5--2,0 Seiten.
+\end{itemize}
+
+\section{Evaluation}
+\subsection{Evaluationsdesign}
+\begin{itemize}
+    \item Empfohlener Umfang in der Bachelorarbeit: ca. 1,0--1,5 Seiten.
+\end{itemize}
+
+\subsection{Ergebnisse der Bewertungskriterien}
+\begin{itemize}
+    \item Empfohlener Umfang in der Bachelorarbeit: ca. 2,0--3,0 Seiten.
+\end{itemize}
+
+\subsection{Nutzwertanalyse: Vergleich n8n und Zapier}
+\begin{itemize}
+    \item Empfohlener Umfang in der Bachelorarbeit: ca. 1,5--2,0 Seiten.
+\end{itemize}
+
+\subsection{Diskussion: Grenzen, Risiken und Übertragbarkeit}
+\begin{itemize}
+    \item Empfohlener Umfang in der Bachelorarbeit: ca. 1,0--1,5 Seiten.
+\end{itemize}
+
+\section{Fazit und Ausblick}
+\subsection{Beantwortung der Forschungsfragen}
+\begin{itemize}
+    \item Empfohlener Umfang in der Bachelorarbeit: ca. 1,0--1,5 Seiten.
+\end{itemize}
+
+\subsection{Handlungshinweise für KKU}
+\begin{itemize}
+    \item Empfohlener Umfang in der Bachelorarbeit: ca. 0,75--1,0 Seiten.
+\end{itemize}
+
+\subsection{Ausblick}
+\begin{itemize}
+    \item Empfohlener Umfang in der Bachelorarbeit: ca. 0,5--0,75 Seiten.
+\end{itemize}
+
+\clearpage
+\nocite{*}
+\printbibliography[heading=bibintoc, title={Literaturverzeichnis}]
+
+\appendix
+\section{Anhang}
+Platzhalter für ergänzende Materialien (z.\,B. BPMN-Modelle, Screenshots, Tabellen).
+
+\clearpage
+\section*{Eidesstattliche Erklärung}
+\addcontentsline{toc}{section}{Eidesstattliche Erklärung}
+Hiermit erkläre ich, dass ich die vorliegende Arbeit selbstständig und ohne unzulässige Hilfe angefertigt habe. Alle verwendeten Quellen und Hilfsmittel sind vollständig und korrekt angegeben.
+
+\end{document}

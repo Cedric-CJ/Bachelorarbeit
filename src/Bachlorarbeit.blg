@@ -1,0 +1,15 @@
+[0] Config.pm:328> INFO - This is Biber 2.21
+[0] Config.pm:331> INFO - Logfile is 'Bachlorarbeit.blg'
+[60] biber:342> INFO - === Mo Mai 25, 2026, 15:28:43
+[72] Biber.pm:421> INFO - Reading 'Bachlorarbeit.bcf'
+[126] Biber.pm:999> INFO - Using all citekeys in bib section 0
+[140] Biber.pm:4487> INFO - Processing section 0
+[150] Biber.pm:4678> INFO - Looking for bibtex file 'Quellen/BA/BA.bib' for section 0
+[153] bibtex.pm:1713> INFO - LaTeX decoding ...
+[266] bibtex.pm:1519> INFO - Found BibTeX data source 'Quellen/BA/BA.bib'
+[695] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[695] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[695] Biber.pm:4307> INFO - Sorting list 'nyt/global//global/global/global' of type 'entry' with template 'nyt' and locale 'en-US'
+[696] Biber.pm:4313> INFO - No sort tailoring available for locale 'en-US'
+[747] bbl.pm:676> INFO - Writing 'Bachlorarbeit.bbl' with encoding 'UTF-8'
+[774] bbl.pm:779> INFO - Output to Bachlorarbeit.bbl

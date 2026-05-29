@@ -1,0 +1,135 @@
+﻿\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc} 
+\usepackage[T1]{fontenc} 
+\usepackage[ngerman,provide=*]{babel} 
+\usepackage{lmodern}
+\usepackage{geometry}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\geometry{a4paper, margin=1in}
+
+\begin{document}
+
+\section*{1. Meilenstein: Ausarbeitung (bis 02.05.2025)}
+
+\subsection*{Literaturrecherche und EinfÃ¼hrung (2 Punkte)}
+
+\textbf{Thema:} Entwicklung eines mehrschichtigen Sicherheitskonzepts fÃ¼r IP-Kameras mit Raspberry Pi in lokalen IoT-Netzwerken
+
+\bigskip
+\textbf{Ziel:}
+\begin{itemize}
+    \item Absicherung der DatenÃ¼bertragung smarter IP-Kameras im lokalen Netz (zwei Raspberry Pis: Kamera \& Gateway).
+    \item Vergleich von TLS, VPN (z.â€¯B. WireGuard) und SSH als VerschlÃ¼sselungsmethoden unter Praxisbedingungen.
+    \item Einsatz von iptables-Firewall, MAC-Rotation und Authentifizierung zur ErhÃ¶hung der Gesamtsicherheit.
+\end{itemize}
+
+\bigskip
+\textbf{Fragestellungen:}
+{\renewcommand{\labelenumi}{\arabic*.}%
+\begin{enumerate}
+    \item Wie unterscheiden sich TLS, VPN und SSH in Bezug auf Sicherheit, Energieverbrauch und Umsetzung auf Raspberry Pi?
+    \item Wie kann durch lokale Segmentierung (Namespaces) und Firewall-Regeln der Angriffsvektor reduziert werden?
+    \item Welche Protokollkonfiguration ermÃ¶glicht eine effiziente, aber sichere VideoÃ¼bertragung?
+\end{enumerate}
+}
+
+\bigskip
+\textbf{Recherchequellen:}
+\begin{itemize}
+    \item IEEE-Artikel zur IoT-VerschlÃ¼sselung und TLS-Leistung auf Embedded-Devices.
+    \item Sicherheitsberichte zu IP-Kamera-Angriffen (z.â€¯B. Mirai-Botnetz).
+    \item Dokumentationen zu VPN (OpenVPN, WireGuard) und SSH-Konfigurationen.
+\end{itemize}
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection*{Kritische Analyse einer Publikation (3 Punkte)}
+
+\textbf{AusgewÃ¤hlte Publikation:}\\
+\textit{"Evaluation of TLS/SSL Implementations on Raspberry Pi for Secure IoT Communication"} von L. Lalande, Univ. Twente, 2024
+
+\bigskip
+\textbf{Analyse:}
+\begin{itemize}
+    \item \textbf{StÃ¤rken:}
+    \begin{itemize}
+        \item Praxisnahe Performance-Messung verschiedener TLS 1.3 Cipher-Suites.
+        \item Session Resumption zeigt messbare Effizienzgewinne fÃ¼r hÃ¤ufige Verbindungen.
+    \end{itemize}
+    \item \textbf{SchwÃ¤chen:}
+    {\renewcommand{\labelenumi}{\arabic*.}%
+    \begin{enumerate}
+        \item Keine BerÃ¼cksichtigung des Energieverbrauchs bei Dauerbetrieb.
+        \item DTLS wurde getestet, aber ohne ErklÃ¤rung fÃ¼r schlechte Ergebnisse.
+    \end{enumerate}
+    }
+    \item \textbf{VerbesserungsvorschlÃ¤ge:}
+    \begin{itemize}
+        \item ErgÃ¤nzung um Stromverbrauchs- und Langzeittests.
+        \item Alternative Tunnelmethoden wie VPN (z.â€¯B. WireGuard) zum Vergleich implementieren.
+    \end{itemize}
+\end{itemize}
+
+\bigskip
+\textbf{Umsetzbare AnsÃ¤tze fÃ¼r den Prototyp:}
+\begin{enumerate}
+    \item Zwei Raspberry Pis im LAN: einer als Kamera-Sender, einer als Gateway mit VPN-Server.
+    \item Vergleich VPN-, TLS- und SSH-basierten Transports, Messung von Latenz, CPU-Auslastung und Sicherheit.
+\end{enumerate}
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection*{Projektidee und Konzeptskizze (4 Punkte)}
+
+\textbf{Zeitplan (Beginn 13.04.2025, eine Woche frÃ¼her!):}
+
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Datum} & \textbf{Aufgabe} \\ \midrule
+13.04.â€“19.04. & Literaturrecherche \& EinfÃ¼hrung formulieren \\
+20.04.â€“26.04. & Kritische Analyse & VerbesserungsvorschlÃ¤ge erarbeiten \\
+27.04.â€“02.05. & Konzeptskizze verfassen \& DINâ€‘A4â€‘Seite finalisieren \\ \bottomrule
+\end{tabular}
+\end{center}
+
+\bigskip
+\textbf{Konzeptskizze:}
+\begin{itemize}
+    \item \textbf{Prototyp:}
+    \begin{itemize}
+        \item Pi A mit Kamera sendet Videodaten Ã¼ber TLS/WebSocket, VPN (z.â€¯B. WireGuard) oder SCP an Pi B.
+        \item iptables auf Pi B begrenzt eingehende Verbindungen auf verschlÃ¼sselte Ports.
+        \item MAC-Adresse des Pi A wird regelmÃ¤ÃŸig geÃ¤ndert.
+    \end{itemize}
+    \item \textbf{Technologien:}
+    \begin{itemize}
+        \item Raspberry Pi 4 + USB-Kamera
+        \item TLS 1.3 via stunnel / Python
+        \item SSH / SCP / SFTP
+        \item iptables, Linux Namespaces, Cronjobs
+    \end{itemize}
+    \item \textbf{Begrenzungen:}
+    \begin{itemize}
+        \item Kein Cloud-Upload oder Ã¶ffentliche Netzwerkverbindung
+        \item Fokus liegt auf LAN-Szenario mit maximal zwei GerÃ¤ten
+    \end{itemize}
+\end{itemize}
+
+\bigskip
+\textbf{Quellen (IEEE-Zitierweise):}
+{\renewcommand{\labelenumi}{[\arabic*]}%
+\begin{enumerate}
+    \item L. Lalande, ``Evaluation of TLS/SSL Implementations on Raspberry Pi,'' B.Sc. Thesis, Univ. Twente, 2024.
+    \item FasterCapital, ``Securing IoT Networks and Devices with Raspberry Pi,'' 2023. Online verfÃ¼gbar: \url{https://fastercapital.com/topics/securing-iot-networks-and-devices-with-raspberry-pi.html}
+    \item Cloudflare, ``What is the Mirai Botnet?,'' 2020. \url{https://www.cloudflare.com/learning/ddos/glossary/mirai-botnet/}
+\end{enumerate}
+}
+
+\end{document}

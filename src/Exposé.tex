@@ -1,0 +1,182 @@
+﻿\documentclass[a4paper,11pt]{article}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[utf8]{inputenc}
+  \usepackage[T1]{fontenc}
+  \usepackage{lmodern}
+  \IfFileExists{phvr8t.tfm}{\usepackage[scaled=0.95]{helvet}}{}
+  \renewcommand{\familydefault}{\sfdefault}
+\else
+  \usepackage{fontspec}
+  \setmainfont{Arial}
+\fi
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage[ngerman]{babel}
+\IfFileExists{microtype.sty}{\usepackage[final]{microtype}}{}
+\PassOptionsToPackage{hyphens}{url}
+\usepackage{hyperref}
+
+\geometry{a4paper,left=3cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+\renewcommand{\baselinestretch}{1.15}\selectfont
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+\hypersetup{hidelinks}
+\urlstyle{same}
+\sloppy
+\setlength{\emergencystretch}{2em}
+\hbadness=10000
+\hfuzz=5pt
+\vfuzz=5pt
+
+\newcommand{\studentname}{Cedric Jon Arnhold}
+\newcommand{\matrikelnummer}{586354}
+\newcommand{\exposedate}{24.03.2026}
+
+\makeatletter
+\def\ps@exposeheader{%
+  \def\@oddhead{\small\studentname\ (\matrikelnummer)\hfill\exposedate}%
+  \def\@evenhead{\@oddhead}%
+  \def\@oddfoot{\hfil\thepage\hfil}%
+  \def\@evenfoot{\@oddfoot}%
+}
+\makeatother
+\pagestyle{exposeheader}
+
+\begin{document}
+
+\pagenumbering{arabic}
+
+\section{Motivation}
+Die Automatisierung manueller Routinetätigkeiten gilt als wesentlicher Faktor des digitalen Wandels, da sie operative Umstrukturierungen ermöglicht, monotone Arbeitsabläufe übernimmt und personelle Ressourcen für strategische, höherwertige Aufgaben freisetzt (vgl. Moreira et al., 2024). Besonders für Kleinst- und Kleinunternehmen (KKU) ist dies relevant, da dort oft fehlende digitale Kompetenz und begrenzte Budgets die Auswahl und Einführung passender Werkzeuge erschweren (vgl. Moreira et al., 2024; Mischke, 2025). Diese Bachelorarbeit knüpft an ein konkretes Praxisproblem eines Handwerksunternehmens an und nutzt Low-Code- sowie Workflow-Automatisierung mit n8n, um eine digitale Basis für die Materialbeschaffung anzustreben. Da n8n als Open-Source-Plattform eine kosteneffiziente Integration betrieblicher Abläufe ohne hohen klassischen Softwareentwicklungsaufwand ermöglicht (vgl. Cunha, 2025).
+
+\section{Problemstellung}
+Das betrachtete Handwerksunternehmen hat weniger als zehn Mitarbeiter*innen und möchte den Bestellprozess in der Materialbeschaffung künftig weitgehend automatisieren. Der Untersuchungsbereich dieser Arbeit umfasst den Prozess von der Bedarfsmeldung auf Basis der Stückliste über die Materialsuche und die Anfrage möglicher Mengenrabatte bis zur Bestellfreigabe. Derzeit werden diese Schritte von dem verantwortlichen Geschäftsinhaber überwiegend manuell und mit hohem Zeitaufwand durchgeführt. Zur Erhebung des IST-Prozesses wird ein leitfadengestütztes Experteninterview eingesetzt. Ziel ist es, Schwachstellen, Medienbrüche und zeitintensive Teilschritte systematisch zu erfassen, um darauf aufbauend einen automatisierten Soll-Prozess zu entwickeln. Der Vergleich mit Zapier erfolgt in dieser Arbeit nicht auf Basis einer prototypischen Implementierung, sondern auf Grundlage von Literatur, Herstellerdokumentation und dokumentierten Praxisberichten. Dadurch wird kein vollsymmetrischer Implementierungsvergleich angestrebt, sondern eine theoriebasierte Einordnung von Zapier gegenüber der praktisch erprobten Lösung n8n.
+
+\section{Zielsetzung}
+Ziel dieser Arbeit ist die Analyse des gegenwärtig manuell durchgeführten Bestellprozesses in einem kleinen Handwerksunternehmen sowie die Konzeption und prototypische Umsetzung eines automatisierten Soll-Prozesses mit n8n. Darauf aufbauend wird untersucht, inwiefern n8n für den betrachteten Anwendungsfall als kostengünstige Alternative zu Zapier geeignet ist. Die Bewertung erfolgt anhand einer gewichteten Nutzwertanalyse auf Basis von Literatur, Produktdokumentation und eigenen Implementierungserfahrungen mit n8n. Zapier wird dabei nicht prototypisch umgesetzt, sondern ausschließlich theoriebasiert bewertet.
+
+\section{Erwartete Ergebnisse}
+Im Rahmen dieser Arbeit werden folgende Ergebnisse erarbeitet:
+\begin{itemize}
+    \item ein dokumentierter IST-Prozess der Materialbeschaffung auf Basis eines leitfadengestützten Interviews, modelliert als BPMN-Diagramm,
+    \item eine Schwachstellenanalyse des IST-Prozesses sowie ein daraus abgeleiteter Soll-Prozess in BPMN,
+    \item eine prototypische Implementierung des Soll-Prozesses mit n8n,
+    \item eine Nutzwertanalyse zum Vergleich mit Zapier anhand definierter Bewertungskriterien,
+    \item fallbezogene Handlungshinweise zur toolspezifischen Eignung von n8n und Zapier für vergleichbare kleine Handwerksunternehmen unter ähnlichen organisatorischen, technischen und wirtschaftlichen Rahmenbedingungen.
+\end{itemize}
+\section{Stand der Forschung} 
+Business Process Automation (BPA) wird als multidisziplinärer Ansatz definiert, der die Modellierung, Ausführung und Optimierung von Prozessabläufen umfasst (Moreira et al., 2024). Während klassische Robotic Process Automation (RPA) primär menschliche Interaktionen mit Benutzeroberflächen imitiert (Stravinskienė \& Serafinas, 2021), haben sich moderne Low-Code-Plattformen zur Workflow-Automatisierung als API-basierte und flexiblere Alternative etabliert (Venkiteela, 2025). Diese Werkzeuge ermöglichen eine schnelle digitale Transformation, da sie als nicht-invasive Technologie auf die bestehende IT-Infrastruktur aufsetzen (Asatiani et al., 2023). Die vorliegende Arbeit nutzt BPA daher als theoretischen Rahmen, um API-gestützte Automatisierungslösungen wissenschaftlich einzuordnen.
+
+Für Kleinst- und kleine Unternehmen ist Automatisierung aufgrund begrenzter Ressourcen kritisch, doch Studien belegen eine Misserfolgsquote von 30 \% bis 50 \% bei Automatisierungsinitiativen (Moreira et al., 2024; Stravinskienė \& Serafinas, 2021). Speziell im Handwerkskontext bremsen hoher Alltagsstress und eine weit verbreitete „Zettelwirtschaft“ die Digitalisierung, wobei ca. 30 \% bis 40 \% der Betriebe noch am Anfang ihrer digitalen Entwicklung stehen (Mischke, 2025). Da die Prozessauswahl oft die größte Hürde darstellt, bilden standardisierbare Beschaffungsprozesse aufgrund ihrer Regelbasiertheit ein ideales Untersuchungsfeld für erste Automatisierungsschritte in Kleinstbetrieben (Moreira et al., 2024; Santos et al., 2025).
+
+Die Bewertungsdimensionen lassen sich über etablierte Kennzahlensysteme operationalisieren (Moreira et al., 2024). Frameworks zur Quantifizierung von Automatisierungseffekten legitimieren die Nutzung von Kosten-Nutzen-Vergleichen, um die ökonomische Effizienz für ressourcenbeschränkte Kleinunternehmen abzusichern (Cunha, 2025; Santos et al., 2025). Die zeitbezogene Dimension wird dabei primär über die Prozessdurchlaufzeit (cycle time) gemessen, während Fehlerreduktion und Kosteneinsparungen die Rentabilität belegen (Cunha, 2025; Moreira et al., 2024).
+
+Die Forschungslücke ergibt sich aus dem Mangel an systematischen Vergleichen unterschiedlicher Plattformlogiken im Handwerk (Mischke, 2025). Zwar liegen erste wissenschaftliche Belege für das Potenzial von n8n in kleinen Unternehmen vor (Cunha, 2025), doch eine direkte Gegenüberstellung fehlt oft, da n8n in der akademischen Literatur bisher nur minimale Aufmerksamkeit erhielt (Venkiteela, 2025). Es mangelt an Studien, die eine proprietäre Logik gegen eine self-hostbare Open-Source-Plattform hinsichtlich Datensouveränität, technischem Know-how und Skalierbarkeit abwägen (Asatiani et al., 2023; Pawar, 2025; Venkiteela, 2025).
+
+Die Bachelorarbeit schließt diese Lücke durch eine strukturierte Gegenüberstellung beider Plattformtypen anhand literaturgestützt operationalisierter Bewertungsdimensionen, exemplarisch umgesetzt an einem realen Beschaffungsprozess eines kleinen Handwerksunternehmens.
+\subsection*{Literatur} 
+\begin{itemize} 
+    \item Asatiani, A., Copeland, O., \& Penttinen, E. (2023). Deciding on the robotic process automation operating model: A checklist for RPA managers. \textit{Business Horizons}, 66(1), 109–121. \url{https://doi.org/10.1016/j.bushor.2022.03.003} 
+    \item Cunha, L. (2025). Accounting automation with n8n: Possibilities, limits, and impacts for small businesses. \textit{Revista Científica de Alto Impacto}, 29(146), 22–23. \url{https://doi.org/10.69849/revistaft/dt10202505281222} 
+    \item Mischke, J. (2025, 3. September). Prozessautomatisierung mit n8n: Chancen, Praxisbeispiele und Zukunftstrends. \textit{LinkedIn}. \url{https://www.linkedin.com/pulse/prozessautomatisierung-mit-n8n-chancen-und-jonas-mischke-0xmle} 
+    \item Moreira, S., Mamede, H. S., \& Santos, A. (2024). Business Process Automation in SMEs: A Systematic Literature Review. \textit{IEEE Access}, 12, 75832–75864. \url{https://doi.org/10.1109/ACCESS.2024.3406548} 
+    \item Pawar, M. (2025). A practical evaluation of self-hosted n8n for secure and scalable workflow automation. \textit{International Journal of Scientific Research in Engineering and Management}, 9(6), 1–9. \url{https://doi.org/10.55041/ijsrem50302} 
+    \item Santos, S., Santos, V., \& Mamede, H. S. (2025). Rebooting Procurement Processes: Leveraging the Synergy of RPA and BPM for Optimized Efficiency. \textit{Electronics}, 14(13), 2694. \url{https://doi.org/10.3390/electronics14132694} 
+    \item Stravinskienė, I., \& Serafinas, D. (2021). Process management and robotic process automation: the insights from systematic literature review. \textit{Management of Organizations: Systematic Research}, 85(1), 87–106. \url{https://doi.org/10.1515/mosr-2021-0006} 
+    \item Venkiteela, P. (2025). n8n: An Open-Source Workflow Automation Platform for Enterprise Integration and AI-Driven Orchestration. \textit{International Journal of Computer Applications}, 187(63). 
+\end{itemize}
+\section{Forschungsfragen}
+Zur Untersuchung des Praxisproblems werden folgende Forschungsfragen formuliert.:
+\begin{enumerate}
+    \item Welche Schwachstellen weist der manuelle Materialbeschaffungsprozess im untersuchten kleinen Handwerksunternehmen hinsichtlich Zeitaufwand, Medienbrüchen und manueller Fehleranfälligkeit auf?
+    \item Wie verändert sich die modellierte Prozessdurchlaufzeit des Materialbeschaffungsprozesses durch den Einsatz von n8n im Vergleich zum manuellen IST-Prozess?
+    \item Wie ist n8n im Vergleich zu Zapier hinsichtlich Implementierungsaufwand, laufender Kosten und theoretischer Eignung für den betrachteten Anwendungsfall zu bewerten?
+\end{enumerate}
+
+\section{Vorgehen}
+Methodisch wird nach dem Design-Science-Ansatz vorgegangen, um einen automatisierten Soll-Prozess als praxisnahes Artefakt zu entwickeln und zu bewerten. Dieser soll als übertragbare Vorlage für vergleichbare Unternehmen dienen. Zunächst erfolgt eine strukturierte Literaturrecherche. Auf dieser Grundlage und unter Berücksichtigung der Anforderungen des Praxisfalls werden die Bewertungskriterien modellierte Prozessdurchlaufzeit, Implementierungsaufwand und laufende Kosten abgeleitet, konkret definiert und in einer gewichteten Kriterienliste für die anschließende Nutzwertanalyse aufbereitet. Anschließend wird der IST-Prozess mithilfe eines leitfadengestützten Interviews erhoben, in BPMN modelliert und auf Schwachstellen analysiert, um die Anforderungen an den Soll-Prozess abzuleiten. Darauf aufbauend wird der Soll-Prozess modelliert und ausschließlich mit n8n prototypisch umgesetzt. Zapier wird auf Basis der definierten Bewertungskriterien theoriebasiert eingeordnet und der praktisch erprobten n8n-Lösung gegenübergestellt. Abschließend werden Handlungshinweise und Ansätze für weitere Verbesserungen formuliert.
+
+\section{Zeitplan}
+\begin{center}
+    \begin{tabular}{@{}ll@{}}
+        \toprule
+        \textbf{Datum} & \textbf{Meilenstein} \\
+        \midrule
+        18.03.2026 & Entwurf Expose \\
+        29.03.2026 & Expose finalisiert \\
+        30.03.2026 & Anmeldung Moodle \\
+        April 2026 & Literaturrecherche sowie Konkretisierung der Bewertungskriterien \\
+        Mai 2026 & Rohfassung der theoretischen und methodischen Grundlagen \\
+        29.05.2026 & Beginn der Bearbeitungszeit \\
+        01.06.2026 & BPMN-Modellierung und Schwachstellenanalyse des IST-Prozesses \\
+        15.06.2026 & Ableitung der Anforderungen und Modellierung des Soll-Prozesses \\
+        29.06.2026 & Prototypische Umsetzung mit n8n und Vergleich mit Zapier \\
+        07.07.2026 & Evaluation anhand der Bewertungskriterien \\
+        13.07.2026 & Inhaltliche Überarbeitung, formale Prüfung, Quellen- und Zitationsprüfung \\
+        27.07.2026 & Finale Abgabe \\
+        \bottomrule
+    \end{tabular}
+\end{center}
+
+\section{Grobgliederung}
+\renewcommand{\labelenumi}{\arabic{enumi}.}
+\renewcommand{\labelenumii}{\arabic{enumi}.\arabic{enumii}.}
+\begin{enumerate}
+    \item Einleitung
+    \begin{enumerate}
+        \item Motivation und Relevanz
+        \item Zielsetzung und Abgrenzung
+        \item Forschungsfragen und Aufbau
+    \end{enumerate}
+    \item Methodik
+    \begin{enumerate}
+        \item Design-Science-Ansatz
+        \item Erhebung des IST-Prozesses durch Experteninterview
+        \item Bewertungsmethodik: Kriterienliste und Nutzwertanalyse
+    \end{enumerate}
+    \item Theoretische Grundlagen
+    \begin{enumerate}
+        \item Low-Code und Workflow-Systeme (BPM/BPA)
+        \item Kriterien für automationsgeeignete Prozesse
+        \item n8n: Architektur und Einsatzgebiete
+        \item Zapier als proprietäre Vergleichslösung
+        \item Bewertungs- und Vergleichskriterien
+    \end{enumerate}
+    \item Analyse des Praxisfalls
+    \begin{enumerate}
+        \item Unternehmenskontext
+        \item Prozessabgrenzung und Begründung
+        \item Erhebung, Dokumentation und BPMN-Modellierung des IST-Prozesses
+        \item Schwachstellen und Anforderungen an den Soll-Prozess
+    \end{enumerate}
+    \item Konzept
+    \begin{enumerate}
+        \item BPMN Soll-Modell
+        \item Lösungsarchitektur in n8n
+        \item Abgrenzung zur Zapier-Umsetzung
+    \end{enumerate}
+    \item Umsetzung
+    \begin{enumerate}
+        \item Technisches Setup
+        \item Prototypische Umsetzung in n8n
+        \item Tests und Fehlerbehandlung
+    \end{enumerate}
+    \item Evaluation
+    \begin{enumerate}
+        \item Evaluationsdesign
+        \item Ergebnisse der Bewertungskriterien
+        \item Nutzwertanalyse: Vergleich n8n und Zapier
+        \item Diskussion: Grenzen, Risiken und Übertragbarkeit
+    \end{enumerate}
+    \item Fazit und Ausblick
+    \begin{enumerate}
+        \item Beantwortung der Forschungsfragen
+        \item Handlungshinweise für KKU
+        \item Ausblick
+    \end{enumerate}
+\end{enumerate}
+\end{document}
