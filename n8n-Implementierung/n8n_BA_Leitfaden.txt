@@ -1,0 +1,760 @@
+# n8n-Leitfaden für die Bachelorarbeit
+
+## 1. Ziel, Scope, Ergebnis
+
+Ich habe das Ziel auf einen testbaren n8n-PoC für den Einkaufsprozess fokussiert:
+- deterministische Fachlogik (Validierung, Matching, Preisvergleich, AB-Abgleich)
+- Human-in-the-Loop an KP1 bis KP4
+- reproduzierbare Testfälle TF1 bis TF5
+
+Zur PoC-Abgrenzung habe ich folgendes entschieden:
+- Externe Langläufer (echte Lieferantenantworten, reale Wartezeiten) setze ich als Mocks um
+- Freigaben KP1 bis KP4 sind echt umgesetzt (Send and Wait for Response)
+
+---
+
+## 2. Voraussetzungen
+
+Ich setze folgendes voraus:
+- Linux-System (in meinem Fall Arch/CachyOS)
+- Docker installiert und laufend
+- Zugriff auf eine Test-E-Mail-Adresse für KP1 bis KP4
+- Projektordner: `n8n-Implementierung/`
+
+---
+
+## 3. Technisches Setup
+
+### 3.1 Docker
+
+```bash
+sudo pacman -Syu
+sudo pacman -S docker docker-compose docker-buildx
+sudo systemctl enable --now docker
+sudo usermod -aG docker $USER
+newgrp docker
+```
+
+### 3.2 n8n starten
+
+```bash
+docker volume create n8n_data
+docker run -it --rm \
+  --name n8n \
+  -p 5678:5678 \
+  -e GENERIC_TIMEZONE="Europe/Berlin" \
+  -e TZ="Europe/Berlin" \
+  -e N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true \
+  -e N8N_RUNNERS_ENABLED=true \
+  -e N8N_EDITOR_BASE_URL="http://localhost:5678" \
+  -v n8n_data:/home/node/.n8n \
+  docker.n8n.io/n8nio/n8n
+```
+
+Dann im Browser: `http://localhost:5678`
+
+### 3.3 Ollama für lokale KI (optional)
+
+```bash
+docker run -d --name ollama -p 11434:11434 -v ollama:/root/.ollama ollama/ollama
+docker exec -it ollama ollama pull gemma4:e2b
+```
+
+Wenn n8n im Docker-Container läuft und Ollama auf dem Host liegt:
+- Base URL in n8n-Credential: `http://host.docker.internal:11434`
+- Falls nötig n8n mit `--add-host=host.docker.internal:host-gateway` starten
+
+---
+
+## 4. Testdaten anlegen
+
+```bash
+mkdir -p n8n-Implementierung/testdaten
+```
+
+### 4.1 `stueckliste_TF1.csv` (vollständig)
+
+```csv
+Artikelbezeichnung,Menge,Werkstoff,Norm,Pruefzeugnis,Oberflaeche
+Flachstahl 40x5,10,S235,EN 10025,nein,blank
+Rohr 60.3x3.2,5,1.4301 Edelstahl,EN 10217-7,ja,gebeizt
+Winkel 50x50x5,8,S355,EN 10056,nein,verzinkt
+```
+
+### 4.2 `stueckliste_TF2.csv` (fehlende Norm)
+
+```csv
+Artikelbezeichnung,Menge,Werkstoff,Norm,Pruefzeugnis,Oberflaeche
+Flachstahl 40x5,10,S235,EN 10025,nein,blank
+Rohr 60.3x3.2,5,1.4301 Edelstahl,,ja,gebeizt
+```
+
+### 4.3 `stueckliste_TF3.csv` (Material ohne passenden Lieferanten)
+
+```csv
+Artikelbezeichnung,Menge,Werkstoff,Norm,Pruefzeugnis,Oberflaeche
+Titanblech 8mm,4,Titan Grade 5,ASTM B265,ja,blank
+```
+
+### 4.4 `stueckliste_TF4.csv` (für Preisvergleich mit Nebenkosten)
+
+```csv
+Artikelbezeichnung,Menge,Werkstoff,Norm,Pruefzeugnis,Oberflaeche
+Flachstahl 40x5,12,S235,EN 10025,nein,blank
+```
+
+### 4.5 `stueckliste_TF5.csv` (für AB-Abweichung)
+
+```csv
+Artikelbezeichnung,Menge,Werkstoff,Norm,Pruefzeugnis,Oberflaeche
+Rohr 60.3x3.2,6,1.4301 Edelstahl,EN 10217-7,ja,gebeizt
+```
+
+### 4.6 `lieferanten.csv`
+
+```csv
+Lieferant,Sortiment,Lieferpauschale,Entladungskosten
+Stahl-Meier GmbH,Baustahl,45,20
+Edelstahl-Mueller,Edelstahl,60,25
+AluminiumWerk AG,Aluminium,50,15
+```
+
+Alle CSV-Dateien als UTF-8 speichern. In n8n immer absolute Pfade verwenden.
+
+---
+
+## 5. Workflow-Bauplan (Knotenreihenfolge)
+
+Ich habe den Workflow in genau dieser Knotenreihenfolge aufgebaut:
+
+1. `Start-Stueckliste` (Manual Trigger)
+2. `AF1-Stueckliste-einlesen` (Read/Write Files from Disk)
+3. `AF1-CSV-parsen` (Extract from File)
+4. `AF1-Normalisieren` (Edit Fields / Set)
+5. `AF2-Validieren-Materialtext` (Code)
+6. `AF2-KI-Materialklassifikation` (optional, AI Agent oder Basic LLM Chain)
+7. `AF2-KI-Ergebnis-uebernehmen` (optional, Code)
+8. `AF3-Lieferantenliste-laden` (Read/Write Files + Extract)
+9. `AF3-Lieferantenzuordnung` (Code)
+10. `KP1-Uebersicht-vorbereiten` (Code)
+11. `KP1-Anfrage-pruefen` (Send Email, Send and Wait for Response)
+12. `KP1-Freitext-verstehen-KI` (optional)
+13. `KP1-Entscheidung-verarbeiten` (Code)
+14. `IF-KP1-freigegeben` (IF)
+15. `Mock-Angebote-empfangen` (Code)
+16. `AF8-Angebote-vergleichen` (Code)
+17. `AF9-Guenstigster-Lieferant` (Code)
+18. `KP2-Bestellzuordnung-bestaetigen` (Send Email, Send and Wait for Response)
+19. `IF-KP2-freigegeben` (IF)
+20. `AF10-Kostenvoranschlag` (Code)
+21. `KP3-Kostenvoranschlag-freigeben` (Send Email, Send and Wait for Response)
+22. `IF-KP3-freigegeben` (IF)
+23. `Mock-Kundenentscheidung` (Edit Fields / Set)
+24. `AF12-Kundenentscheidung-auswerten` (Switch)
+25. `AF13-Bestellmails-erstellen` (Code)
+26. `KP4-Bestellung-freigeben` (Send Email, Send and Wait for Response)
+27. `IF-KP4-freigegeben` (IF)
+28. `AF14-Materialien-bestellen` (Send Email oder No Operation)
+29. `Mock-Auftragsbestaetigung` (Edit Fields / Set)
+30. `AF15-AB-Abgleich` (Code)
+31. `IF-AB-korrekt` (IF)
+32. `AF16-Auf-Lieferung-warten` (No Operation)
+
+---
+
+## 6. Detaillierte Konfiguration
+
+### 6.1 Phase 1 – Eingang und Normalisierung
+
+**Knoten 1: `Start-Stueckliste`**
+- Typ: Manual Trigger
+- Keine weitere Konfiguration
+
+**Knoten 2: `AF1-Stueckliste-einlesen`**
+- Typ: Read/Write Files from Disk
+- Operation: Read File(s) From Disk
+- File Path: z. B. `/home/cedric/.../n8n-Implementierung/testdaten/stueckliste_TF1.csv`
+
+**Knoten 3: `AF1-CSV-parsen`**
+- Typ: Extract from File
+- Operation: Extract from CSV
+- Input Binary Field: `data`
+
+**Knoten 4: `AF1-Normalisieren`**
+- Typ: Edit Fields (Set)
+- Mode: Manual Mapping
+- Felder:
+  - `Werkstoff` → `{{ $json.Werkstoff.trim().toUpperCase() }}`
+  - `Norm` → `{{ $json.Norm ? $json.Norm.trim() : '' }}`
+  - `Menge` → `{{ parseInt($json.Menge, 10) }}`
+  - `Artikelbezeichnung` → `{{ $json.Artikelbezeichnung.trim() }}`
+  - `Pruefzeugnis` → `{{ $json.Pruefzeugnis }}`
+  - `Oberflaeche` → `{{ $json.Oberflaeche }}`
+
+**Knoten 5: `AF2-Validieren-Materialtext` (Code)**
+
+```javascript
+return items.map(({ json }) => {
+  const fehlend = [];
+  if (!json.Norm) fehlend.push('Norm');
+  if (!json.Werkstoff) fehlend.push('Werkstoff');
+  if (!json.Menge) fehlend.push('Menge');
+
+  json.status = fehlend.length ? 'offen/pruefpflichtig' : 'ok';
+  json.fehlendeFelder = fehlend;
+  json.materialText = [
+    json.Artikelbezeichnung,
+    json.Werkstoff,
+    json.Norm,
+    json.Oberflaeche,
+    json.Pruefzeugnis ? `Pruefzeugnis:${json.Pruefzeugnis}` : '',
+  ].filter(Boolean).join(' | ');
+  return { json };
+});
+```
+
+**Knoten 6: `AF2-KI-Materialklassifikation` (optional)**
+- Typ: AI Agent (Tools Agent) oder Basic LLM Chain
+- Prompt Mode: Define below
+- Prompt:
+
+```text
+Du analysierst Materialpositionen fuer den Einkauf.
+
+Wichtig:
+- Keine starre Liste verwenden.
+- Erzeuge eine allgemeine, uebertragbare Materialgruppe.
+
+Eingang:
+- Artikelbezeichnung: {{ $json.Artikelbezeichnung }}
+- Werkstoff: {{ $json.Werkstoff }}
+- Norm: {{ $json.Norm }}
+- Oberflaeche: {{ $json.Oberflaeche }}
+- Gesamtkontext: {{ $json.materialText }}
+
+Gib ausschliesslich JSON zurueck mit:
+{
+  "materialtyp": "<allgemeine Warengruppe>",
+  "suchbegriffe": ["<2-6 passende Begriffe>"],
+  "confidence": <0 bis 1>,
+  "begruendung": "<kurz>"
+}
+```
+
+- `Require Specific Output Format`: aktivieren
+- Structured Output Parser mit diesem JSON Schema:
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "materialtyp": { "type": "string" },
+    "suchbegriffe": { "type": "array", "items": { "type": "string" }, "minItems": 0, "maxItems": 8 },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "begruendung": { "type": "string" }
+  },
+  "required": ["materialtyp", "suchbegriffe", "confidence", "begruendung"],
+  "additionalProperties": false
+}
+```
+
+**Knoten 7: `AF2-KI-Ergebnis-uebernehmen` (optional, Code)**
+
+Ohne KI verbinde ich Knoten 5 direkt mit Knoten 8.
+
+```javascript
+const basis = $('AF2-Validieren-Materialtext').all(0, $runIndex);
+
+function parseKi(rawJson) {
+  let raw = rawJson.output ?? rawJson.text ?? rawJson.response ?? rawJson.data ?? rawJson;
+
+  if (typeof raw === 'string') {
+    const cleaned = raw
+      .replace(/^```json\s*/i, '')
+      .replace(/^```/i, '')
+      .replace(/```$/i, '')
+      .trim();
+    try { raw = JSON.parse(cleaned); } catch { return null; }
+  }
+
+  if (raw && typeof raw === 'object' && raw.output && typeof raw.output === 'object') {
+    raw = raw.output;
+  }
+  if (!raw || typeof raw !== 'object') return null;
+
+  return {
+    materialtyp: String(raw.materialtyp ?? raw.kategorie ?? '').trim(),
+    suchbegriffe: Array.isArray(raw.suchbegriffe)
+      ? raw.suchbegriffe.map(v => String(v).trim()).filter(Boolean)
+      : [],
+    confidence: Number(raw.confidence ?? raw.konfidenz ?? 0),
+    begruendung: String(raw.begruendung ?? '').trim(),
+  };
+}
+
+return basis.map((item, idx) => {
+  const json = { ...item.json };
+  const ki = parseKi(items[idx]?.json ?? {});
+
+  if (ki && ki.materialtyp) {
+    json.materialtyp = ki.materialtyp;
+    json.suchbegriffe = ki.suchbegriffe;
+    json.kategorie = ki.materialtyp;
+    json.kategorieQuelle = 'KI';
+    json.kategorieConfidence = ki.confidence;
+    json.kategorieBegruendung = ki.begruendung;
+  } else {
+    json.materialtyp = json.Werkstoff || json.Artikelbezeichnung || 'Unklassifiziert';
+    json.suchbegriffe = [json.Werkstoff, json.Artikelbezeichnung]
+      .filter(Boolean)
+      .map(v => String(v).trim());
+    json.kategorie = json.materialtyp;
+    json.kategorieQuelle = 'Fallback';
+    json.kategorieConfidence = ki?.confidence ?? 0;
+    json.kategorieBegruendung = ki?.begruendung ?? 'Kein valides KI-Ergebnis';
+  }
+
+  return { json };
+});
+```
+
+---
+
+### 6.2 Phase 2 – Lieferantenzuordnung
+
+**Knoten 8: `AF3-Lieferantenliste-laden`**
+- Read/Write Files from Disk: `lieferanten.csv` lesen
+- danach Extract from File: CSV parsen
+
+**Knoten 9: `AF3-Lieferantenzuordnung` (Code)**
+
+```javascript
+const lieferanten = $('AF3-Lieferantenliste-laden').all(0, $runIndex).map(i => i.json);
+
+const norm = (v = '') => String(v)
+  .toLowerCase()
+  .replace(/ae/g, 'a')
+  .replace(/oe/g, 'o')
+  .replace(/ue/g, 'u')
+  .replace(/[^a-z0-9]+/g, ' ')
+  .trim();
+
+const tokens = (v = '') => norm(v).split(/\s+/).filter(Boolean);
+
+return items.map(({ json }) => {
+  const materialTokens = [
+    ...(Array.isArray(json.suchbegriffe) ? json.suchbegriffe : []),
+    json.materialtyp || '',
+    json.Werkstoff || '',
+    json.Artikelbezeichnung || '',
+  ].flatMap(tokens);
+
+  const scored = lieferanten.map(l => {
+    const sortimentTokens = String(l.Sortiment || '')
+      .split(',')
+      .map(s => s.trim())
+      .flatMap(tokens);
+
+    let score = 0;
+    for (const mt of materialTokens) {
+      if (sortimentTokens.includes(mt)) score += 2;
+      else if (sortimentTokens.some(st => st.includes(mt) || mt.includes(st))) score += 1;
+    }
+    return { lieferant: l, score };
+  });
+
+  const maxScore = Math.max(...scored.map(s => s.score), 0);
+  const passende = scored
+    .filter(s => s.score > 0 && s.score >= maxScore - 1)
+    .map(s => s.lieferant);
+
+  json.moeglicheLieferanten = passende.map(l => l.Lieferant);
+  json.matchingScores = scored.map(s => ({ lieferant: s.lieferant.Lieferant, score: s.score }));
+  json.zuordnungStatus = passende.length ? 'zugeordnet' : 'kein passender Lieferant';
+
+  if (!passende.length) json.status = 'offen/pruefpflichtig';
+  return { json };
+});
+```
+
+---
+
+### 6.3 Phase 3 – KP1 (Anfrage prüfen)
+
+**Knoten 10: `KP1-Uebersicht-vorbereiten` (Code)**
+
+```javascript
+const positionen = items.map(({ json }, idx) => ({
+  pos: idx + 1,
+  artikel: json.Artikelbezeichnung || '',
+  werkstoff: json.Werkstoff || '',
+  norm: json.Norm || '',
+  menge: json.Menge ?? '',
+  status: json.status || '',
+  lieferanten: json.moeglicheLieferanten || [],
+  zuordnungStatus: json.zuordnungStatus || '',
+}));
+
+const rows = positionen.map(p => `
+  <tr>
+    <td>${p.pos}</td><td>${p.artikel}</td><td>${p.werkstoff}</td>
+    <td>${p.norm || '-'}</td><td>${p.menge}</td>
+    <td>${p.lieferanten.join(', ') || '-'}</td><td>${p.zuordnungStatus}</td>
+  </tr>
+`).join('');
+
+const html = `
+  <h2>KP1 - Lieferantenanfrage pruefen</h2>
+  <table border="1" cellspacing="0" cellpadding="6">
+    <thead>
+      <tr>
+        <th>Pos</th><th>Artikel</th><th>Werkstoff</th><th>Norm</th>
+        <th>Menge</th><th>Lieferanten</th><th>Status</th>
+      </tr>
+    </thead>
+    <tbody>${rows}</tbody>
+  </table>
+`;
+
+return [{
+  json: {
+    kp1_mail_html: html,
+    positionen,
+  }
+}];
+```
+
+**Knoten 11: `KP1-Anfrage-pruefen`**
+- Typ: Send Email
+- Operation: Send and Wait for Response
+- Response Type: Custom Form
+- To: meine Test-E-Mail
+- Subject: `KP1: Lieferantenanfrage pruefen - {{ $now.toISODate() }}`
+- Body (HTML): `{{ $json.kp1_mail_html }}`
+
+Custom-Form Felder:
+1. `entscheidung` (Dropdown, Required): `freigeben`, `ablehnen`
+2. `ablehnungsgrund` (Textarea)
+3. `aenderungen` (Textarea): Format `Positionsnummer|Lieferant1,Lieferant2`
+4. `kommentar_freitext` (Textarea)
+
+**Knoten 12: `KP1-Freitext-verstehen-KI` (optional)**
+- Eingabe: `{{ $json.data.kommentar_freitext || '' }}`
+- Ziel: strukturiertes Feld `aenderungen_ki`
+
+**Knoten 13: `KP1-Entscheidung-verarbeiten` (Code)**
+
+```javascript
+const form = $json.data ?? $json;
+
+const entscheidung = String(form.entscheidung ?? '').trim().toLowerCase();
+const ablehnungsgrund = String(form.ablehnungsgrund ?? '').trim();
+const aenderungenDirekt = String(form.aenderungen ?? '').trim();
+const aenderungenKI = String(form.aenderungen_ki ?? '').trim();
+const aenderungen = [aenderungenDirekt, aenderungenKI].filter(Boolean).join('\n');
+
+if (!['freigeben', 'ablehnen'].includes(entscheidung)) {
+  throw new Error("Ungueltige Entscheidung. Erlaubt: freigeben oder ablehnen.");
+}
+if (entscheidung === 'ablehnen' && !ablehnungsgrund) {
+  throw new Error("Ablehnung ohne Grund ist nicht zulaessig.");
+}
+
+const positionen = $('KP1-Uebersicht-vorbereiten').first().json.positionen;
+
+if (aenderungen) {
+  const zeilen = aenderungen.split(/\r?\n/).map(z => z.trim()).filter(Boolean);
+  for (const zeile of zeilen) {
+    const [posRaw, lieferantenRaw] = zeile.split('|');
+    if (!posRaw || lieferantenRaw === undefined) {
+      throw new Error(`Ungueltiges Format: ${zeile}`);
+    }
+    const pos = Number.parseInt(posRaw.trim(), 10);
+    if (!Number.isInteger(pos) || pos < 1 || pos > positionen.length) {
+      throw new Error(`Ungueltige Positionsnummer: ${posRaw}`);
+    }
+    const lieferanten = lieferantenRaw.split(',').map(v => v.trim()).filter(Boolean);
+    positionen[pos - 1].lieferanten = lieferanten;
+    positionen[pos - 1].zuordnungStatus = lieferanten.length ? 'zugeordnet' : 'kein passender Lieferant';
+  }
+}
+
+return positionen.map(p => ({
+  json: {
+    Artikelbezeichnung: p.artikel,
+    Werkstoff: p.werkstoff,
+    Norm: p.norm,
+    Menge: p.menge,
+    status: p.status,
+    moeglicheLieferanten: p.lieferanten,
+    zuordnungStatus: p.zuordnungStatus,
+    kp1_entscheidung: entscheidung,
+    kp1_ablehnungsgrund: ablehnungsgrund,
+  },
+}));
+```
+
+**Knoten 14: `IF-KP1-freigegeben`**
+- Bedingung: `{{ $json.kp1_entscheidung }} equals freigeben`
+- True → weiter zu Phase 4
+- False → zurück zu Knoten 11
+
+---
+
+### 6.4 Phase 4 – Angebote und KP2
+
+**Knoten 15: `Mock-Angebote-empfangen` (Code)**
+
+```javascript
+return items.map(({ json }) => {
+  json.angebote = (json.moeglicheLieferanten || []).map((lieferant, i) => ({
+    lieferant,
+    stueckpreis: 10 + i * 2,
+    lieferkosten: i === 0 ? 45 : 60,
+    entladungspauschale: i === 0 ? 20 : 15,
+    zusatzkosten: 0
+  }));
+  return { json };
+});
+```
+
+**Knoten 16: `AF8-Angebote-vergleichen` (Code)**
+
+```javascript
+return items.map(({ json }) => {
+  json.angebote = (json.angebote || []).map(a => ({
+    ...a,
+    gesamt: a.stueckpreis * json.Menge + a.lieferkosten + a.entladungspauschale + (a.zusatzkosten || 0)
+  }));
+  return { json };
+});
+```
+
+**Knoten 17: `AF9-Guenstigster-Lieferant` (Code)**
+
+```javascript
+return items.map(({ json }) => {
+  json.bester = (json.angebote || []).length
+    ? [...json.angebote].sort((a, b) => a.gesamt - b.gesamt)[0]
+    : null;
+  return { json };
+});
+```
+
+**Knoten 18: `KP2-Bestellzuordnung-bestaetigen`**
+- Typ: Send Email
+- Operation: Send and Wait for Response
+- Felder: `entscheidung`, `ablehnungsgrund`, `aenderungen`, `kommentar_freitext`
+- Gleiches Muster wie KP1
+
+**Knoten 19: `IF-KP2-freigegeben`**
+- Bedingung: `{{ ($json.data?.entscheidung || $json.entscheidung) === 'freigeben' }}`
+- False → zurück zu Knoten 18
+
+---
+
+### 6.5 Phase 5 – Kostenvoranschlag, KP3, Kunde
+
+**Knoten 20: `AF10-Kostenvoranschlag` (Code)**
+
+```javascript
+const summe = items.reduce((s, { json }) => s + (json.bester ? json.bester.gesamt : 0), 0);
+return [{
+  json: {
+    beschaffungskosten: +summe.toFixed(2),
+    kostenvoranschlag: +(summe * 1.3).toFixed(2),
+    positionen: items.map(i => i.json),
+  }
+}];
+```
+
+**Knoten 21: `KP3-Kostenvoranschlag-freigeben`**
+- Typ: Send Email
+- Operation: Send and Wait for Response
+- Body z. B.: `Kostenvoranschlag: {{ $json.kostenvoranschlag }} EUR (Beschaffung: {{ $json.beschaffungskosten }} EUR)`
+- Felder: `entscheidung`, `ablehnungsgrund`, `kommentar_freitext`
+
+**Knoten 22: `IF-KP3-freigegeben`**
+- Bedingung: `{{ ($json.data?.entscheidung || $json.entscheidung) === 'freigeben' }}`
+- False → zurück zu Knoten 21
+
+**Knoten 23: `Mock-Kundenentscheidung`**
+- Typ: Edit Fields (Set)
+- Feld: `kundenentscheidung`
+- Testwerte: `stimmt zu`, `Kleine Aenderung`, `Grosse Aenderung`, `stimmt nicht zu`
+
+**Knoten 24: `AF12-Kundenentscheidung-auswerten`**
+- Typ: Switch
+- Expression: `{{ $json.kundenentscheidung }}`
+- Routes:
+  - `stimmt zu` → Phase 6
+  - `Kleine Aenderung` → zurück zu KP3
+  - `Grosse Aenderung` → NoOp "Neustart"
+  - `stimmt nicht zu` → NoOp "Auftrag nicht erteilt"
+
+---
+
+### 6.6 Phase 6 – Bestellung und KP4
+
+**Knoten 25: `AF13-Bestellmails-erstellen` (Code)**
+
+```javascript
+const positionen = $json.positionen || items.map(i => i.json);
+const bestellungen = {};
+
+positionen.forEach(p => {
+  const lieferant = p.bester ? p.bester.lieferant : 'Unbekannt';
+  if (!bestellungen[lieferant]) bestellungen[lieferant] = [];
+  bestellungen[lieferant].push({
+    artikel: p.Artikelbezeichnung,
+    menge: p.Menge,
+    werkstoff: p.Werkstoff,
+    norm: p.Norm,
+    preis: p.bester ? p.bester.gesamt : 0
+  });
+});
+
+return Object.entries(bestellungen).map(([lieferant, positionen]) => ({
+  json: { lieferant, positionen, entwurf: true }
+}));
+```
+
+**Knoten 26: `KP4-Bestellung-freigeben`**
+- Typ: Send Email
+- Operation: Send and Wait for Response
+- Felder: `entscheidung`, `ablehnungsgrund`, `aenderungen`, `kommentar_freitext`
+
+**Knoten 27: `IF-KP4-freigegeben`**
+- Bedingung: `{{ ($json.data?.entscheidung || $json.entscheidung) === 'freigeben' }}`
+- False → zurück zu Knoten 26
+
+**Knoten 28: `AF14-Materialien-bestellen`**
+- Im Test: No Operation oder Send Email an Test-Mailbox
+
+---
+
+### 6.7 Phase 7 – AB-Abgleich
+
+**Knoten 29: `Mock-Auftragsbestaetigung`**
+- Typ: Edit Fields (Set)
+- Beispielwerte für Abweichung (TF5):
+  - `ab.menge = {{ $json.positionen[0].menge + 1 }}`
+  - `ab.preis = {{ $json.positionen[0].preis }}`
+  - `ab.lieferant = {{ $json.lieferant }}`
+  - `bestellung.menge = {{ $json.positionen[0].menge }}`
+  - `bestellung.preis = {{ $json.positionen[0].preis }}`
+
+**Knoten 30: `AF15-AB-Abgleich` (Code)**
+
+```javascript
+return items.map(({ json }) => {
+  const abw = json.ab.menge !== json.bestellung.menge
+    || json.ab.preis !== json.bestellung.preis;
+  json.abStatus = abw ? 'nicht korrekt' : 'korrekt';
+  return { json };
+});
+```
+
+**Knoten 31: `IF-AB-korrekt`**
+- Bedingung: `{{ $json.abStatus }} equals korrekt`
+- True → Knoten 32
+- False → zurück zu Knoten 29 oder Klärungszweig
+
+**Knoten 32: `AF16-Auf-Lieferung-warten`**
+- Typ: No Operation
+- Ende des PoC-Workflows
+
+---
+
+## 7. Audit-Trail (NF2)
+
+Nach jedem KP (1 bis 4) habe ich einen Log-Knoten eingefügt:
+- Option A: Append to File
+- Option B: Google Sheets → Append Row
+
+Empfohlene Felder:
+- `zeitstempel = {{ $now.toISO() }}`
+- `schritt = KP1|KP2|KP3|KP4`
+- `entscheidung = {{ $json.kp1_entscheidung || $json.data?.entscheidung || $json.entscheidung || 'unbekannt' }}`
+- `ablehnungsgrund = {{ $json.kp1_ablehnungsgrund || $json.data?.ablehnungsgrund || '' }}`
+- `bearbeiter = Geschaeftsinhaber`
+
+---
+
+## 8. Testdurchführung (TF1 bis TF5)
+
+Vor jedem Test:
+1. In Knoten 2 den Datei-Pfad auf die passende TF-Datei setzen
+2. Falls nötig Mock-Werte in Knoten 23 und 29 anpassen
+3. Workflow per Manual Trigger starten
+
+Erwartungen:
+- TF1: Vollständige Verarbeitung ohne Pflichtfeld-Fehler
+- TF2: Fehlende Norm → `offen/pruefpflichtig`, KP1 stoppt ohne Freigabe
+- TF3: Kein passender Lieferant → `kein passender Lieferant`
+- TF4: Auswahl nach `gesamt`, nicht nur nach Stückpreis
+- TF5: AB-Abweichung → `nicht korrekt`, keine Freigabe ohne Klärung
+
+Zusatztest: In KP1 bewusst `ablehnen` wählen und Grund angeben, dann prüfen ob der Loop korrekt zurück zu KP1 geht.
+
+---
+
+## 9. Troubleshooting
+
+- `could not read Username for 'https://github.com'` → GitHub-Auth (PAT/SSH) fehlt, hat nichts mit n8n zu tun
+- CSV wird nicht gefunden → absoluter Pfad, Datei-Rechte, bei Docker ggf. Host-Pfad als Volume mounten
+- Umlaute kaputt → CSV als UTF-8 speichern
+- Send-and-Wait-Mail öffnet keinen gültigen Link → `N8N_EDITOR_BASE_URL` korrekt setzen
+- Node-Referenz in Code ist leer → Node-Namen müssen exakt gleich sein
+
+---
+
+## 10. Quellen (zitierfähig, Abruf: 29.05.2026)
+
+Im Fließtext verweise ich mit `[R1]` bis `[R23]`.
+
+[R1] n8n Docs: Docker Installation – https://docs.n8n.io/hosting/installation/docker/
+
+[R2] n8n Docs: Environment Variables Overview – https://docs.n8n.io/hosting/configuration/environment-variables/
+
+[R3] n8n Docs: Manual Trigger Node – https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.manualworkflowtrigger/
+
+[R4] n8n Docs: Read/Write Files from Disk – https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.readwritefile/
+
+[R5] n8n Docs: Extract from File – https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.extractfromfile/
+
+[R6] n8n Docs: Edit Fields (Set) – https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.set/
+
+[R7] n8n Docs: Code Node – https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/
+
+[R8] n8n Docs: IF Node – https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.if/
+
+[R9] n8n Docs: Switch Node – https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.switch/
+
+[R10] n8n Docs: Send Email (inkl. Send and Wait for Response) – https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.sendemail/
+
+[R11] n8n Docs: No Operation, do nothing – https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.noop/
+
+[R12] n8n Docs: AI Agent – https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.agent/
+
+[R13] n8n Docs: Structured Output Parser – https://docs.n8n.io/integrations/builtin/cluster-nodes/sub-nodes/n8n-nodes-langchain.outputparserstructured/
+
+[R14] n8n Docs: Information Extractor – https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.information-extractor/
+
+[R15] n8n Docs: Google Sheets Node – https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googlesheets/
+
+[R16] n8n Docs: Google Sheets "Append Row" Operation – https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googlesheets/sheet-operations/
+
+[R17] n8n Docs: Sticky Notes – https://docs.n8n.io/workflows/components/sticky-notes/
+
+[R18] n8n Docs: Splitting with conditionals – https://docs.n8n.io/flow-logic/splitting/
+
+[R19] Docker Docs: Linux Post-installation steps – https://docs.docker.com/engine/install/linux-postinstall/
+
+[R20] Docker Docs: Compose installation overview – https://docs.docker.com/compose/install/
+
+[R21] ArchWiki: Docker – https://wiki.archlinux.org/title/Docker
+
+[R22] Ollama Docs: Docker – https://docs.ollama.com/docker
+
+[R23] Ollama Docs: Integration mit n8n – https://docs.ollama.com/integrations/n8n

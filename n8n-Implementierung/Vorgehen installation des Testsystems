@@ -1,0 +1,53 @@
+Testsystem Laptop mit Arch Linux
+Faustregel:
+
+KI darf schreiben, klassifizieren, zusammenfassen.
+Code entscheidet Preise, Zuordnung, Abweichungen.
+Mensch gibt final frei.
+
+## Umsetzungsprotokoll 
+Phase 1 Eingang:
+KP1 Freigabe     
+Angebote & Vergleich     
+KP2–KP4     
+Switch Kundenentsch.     
+AB-Abgleich     
+Audit-Trail     
+
+1. System aktualisieren
+bashsudo pacman -Syu
+
+2. Docker Engine + Compose installieren.
+bashsudo pacman -S docker docker-compose docker-buildx
+
+3. Dienst aktivieren und starten.
+bashsudo systemctl enable --now docker
+
+4. Dich selbst in die docker-Gruppe aufnehmen (damit du ohne sudo arbeiten kannst).
+bashsudo usermod -aG docker $USER
+newgrp docker
+
+5. Testen.
+bashdocker volume create n8n_data
+docker run -it --rm \
+  --name n8n \
+  -p 5678:5678 \
+  -e GENERIC_TIMEZONE="Europe/Berlin" \
+  -e TZ="Europe/Berlin" \
+  -e N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true \
+  -e N8N_RUNNERS_ENABLED=true \
+  -v n8n_data:/home/node/.n8n \
+  docker.n8n.io/n8nio/n8n
+Dann im Browser http://localhost:5678 öffnen,
+
+
+
+
+Probleme:
+beim Einlesen von CSV dateien, diese müssen in "/home/node/.n8n-files/testdaten/" liegen oder der jeweilige Ordner muss gemountet werden.
+
+SMTP mails über SMTP verschicken (login klappt nicht)
+-> gelöst mit extra APP Password (https://myaccount.google.com/apppasswords)
+
+lokale ki (http://localhost:11434/) gemma4:e2b als nativ unter linux in Docker n8n einbinden
+
