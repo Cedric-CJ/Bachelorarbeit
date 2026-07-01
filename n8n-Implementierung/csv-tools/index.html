@@ -1,0 +1,1058 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CSV Builder fuer n8n Testdaten</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --card: #ffffff;
+      --ink: #1e2832;
+      --muted: #5d6a78;
+      --line: #d6dde5;
+      --accent: #0d7e8a;
+      --accent-2: #12616a;
+      --danger: #ba2a2a;
+      --ok: #1f7a33;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(1000px 500px at 110% -10%, #e2f2f4 0%, rgba(226, 242, 244, 0) 50%),
+        radial-gradient(1200px 800px at -20% 120%, #e8f0fa 0%, rgba(232, 240, 250, 0) 50%),
+        var(--bg);
+      color: var(--ink);
+      font-family: "IBM Plex Sans", "Source Sans Pro", "Segoe UI", sans-serif;
+      line-height: 1.4;
+      padding: 24px;
+    }
+
+    h1, h2, h3 {
+      margin: 0;
+      font-family: "Barlow Semi Condensed", "Trebuchet MS", sans-serif;
+      letter-spacing: 0.02em;
+    }
+
+    h1 { font-size: 34px; margin-bottom: 8px; }
+    h2 { font-size: 24px; margin-bottom: 12px; }
+
+    .sub {
+      margin: 0 0 20px;
+      color: var(--muted);
+      max-width: 1000px;
+    }
+
+    .layout {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: 1fr;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: 0 10px 28px rgba(19, 35, 56, 0.08);
+      padding: 16px;
+    }
+
+    .grid {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+    }
+
+    .grid th,
+    .grid td {
+      border: 1px solid var(--line);
+      padding: 8px;
+      vertical-align: top;
+    }
+
+    .grid th {
+      background: #f0f5f8;
+      text-align: left;
+      font-size: 13px;
+      color: #23313f;
+    }
+
+    .grid td { background: #fff; }
+
+    .table-scroll {
+      overflow-x: auto;
+      margin-top: 8px;
+    }
+
+    .grid input,
+    .grid textarea,
+    .grid select {
+      width: 100%;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #bcc8d4;
+      font: inherit;
+      color: var(--ink);
+      background: #fff;
+    }
+
+    .grid input[readonly] {
+      background: #f1f4f8;
+      color: #3d4b5a;
+      font-weight: 600;
+    }
+
+    .grid textarea {
+      min-height: 64px;
+      resize: vertical;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .toolbar.inline {
+      margin-top: 0;
+    }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font: 600 14px/1 "IBM Plex Sans", "Source Sans Pro", sans-serif;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn-primary:hover { background: var(--accent-2); }
+
+    .btn-secondary {
+      background: #e7eef4;
+      color: #1f2d3a;
+    }
+
+    .btn-danger {
+      background: #f8e9e9;
+      color: var(--danger);
+      border: 1px solid #ebcece;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    .mono {
+      font-family: "IBM Plex Mono", "Consolas", monospace;
+      font-size: 13px;
+      width: 100%;
+      min-height: 110px;
+      border: 1px solid #bcc8d4;
+      border-radius: 10px;
+      padding: 10px;
+      resize: vertical;
+    }
+
+    .status {
+      margin-top: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ok);
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 99px;
+      background: #e7f3f4;
+      color: #0f5f68;
+      font-size: 12px;
+      margin-right: 6px;
+    }
+
+    .row-actions {
+      display: flex;
+      justify-content: center;
+    }
+
+    .kp1-shell {
+      display: grid;
+      grid-template-columns: minmax(760px, 2fr) minmax(320px, 1fr);
+      gap: 14px;
+      align-items: start;
+      margin-top: 10px;
+    }
+
+    .kp1-left .table-scroll {
+      margin-top: 0;
+      max-height: 72vh;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+    }
+
+    .kp1-left .grid { margin-top: 0; }
+
+    .kp1-right {
+      position: sticky;
+      top: 12px;
+      display: grid;
+      gap: 12px;
+      align-self: start;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #f9fcff;
+      padding: 12px;
+    }
+
+    .panel h3 {
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+
+    .panel .hint { margin-top: 6px; }
+
+    .quick-list {
+      display: grid;
+      gap: 10px;
+      max-height: 46vh;
+      overflow: auto;
+      padding-right: 3px;
+      margin-top: 8px;
+    }
+
+    .quick-card {
+      border: 1px solid #ccdae8;
+      background: #fff;
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    .quick-title {
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .quick-sub {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .quick-options {
+      display: grid;
+      gap: 6px;
+    }
+
+    .quick-options label {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      font-size: 13px;
+      color: #243445;
+      cursor: pointer;
+    }
+
+    .quick-options input[type="checkbox"] {
+      margin-top: 2px;
+      width: 16px;
+      height: 16px;
+      flex: 0 0 auto;
+    }
+
+    .quick-manual {
+      margin-top: 8px;
+      width: 100%;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #bcc8d4;
+      font: inherit;
+      font-size: 13px;
+    }
+
+    .mono.small {
+      min-height: 82px;
+      font-size: 12px;
+    }
+
+    details.expert {
+      border: 1px dashed #c8d3de;
+      border-radius: 10px;
+      padding: 8px 10px;
+      background: #fff;
+    }
+
+    details.expert summary {
+      cursor: pointer;
+      font-weight: 600;
+      color: #1f3548;
+    }
+
+    @media (max-width: 900px) {
+      body { padding: 12px; }
+      h1 { font-size: 28px; }
+      .card { padding: 12px; }
+      .grid { font-size: 13px; }
+    }
+
+    @media (max-width: 1400px) {
+      .kp1-shell { grid-template-columns: 1fr; }
+      .kp1-right { position: static; }
+      .kp1-left .table-scroll { max-height: none; }
+      .quick-list { max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <h1>CSV Builder für n8n Testdaten</h1>
+  <p class="sub">
+    Dieses Tool erzeugt zwei Dateien für den Workflow: <span class="pill">stueckliste_*.csv</span>
+    und <span class="pill">lieferanten_*.csv</span>. Die Sortimentsbreite je Lieferant ist frei erweiterbar.
+  </p>
+
+  <div class="layout">
+    <section class="card">
+      <h2>1) Stueckliste erstellen</h2>
+      <table class="grid" id="stueckliste-table">
+        <thead>
+          <tr>
+            <th style="width:24%">Artikelbezeichnung</th>
+            <th style="width:10%">Menge</th>
+            <th style="width:18%">Werkstoff</th>
+            <th style="width:16%">Norm</th>
+            <th style="width:12%">Prüfzeugnis</th>
+            <th style="width:14%">Oberflaechen-Eigenschaften</th>
+            <th style="width:6%">Aktion</th>
+          </tr>
+        </thead>
+        <tbody id="stueckliste-body"></tbody>
+      </table>
+
+      <div class="toolbar">
+        <button class="btn-secondary" id="add-stueckliste-row" type="button">+ Position</button>
+        <button class="btn-primary" id="download-stueckliste" type="button">Stückliste CSV erstellen</button>
+      </div>
+      <div class="hint">
+        CSV-Header: <code>Artikelbezeichnung,Menge,Werkstoff,Norm,Pruefzeugnis,Oberflaeche</code>
+      </div>
+      <div class="status" id="stueckliste-status"></div>
+    </section>
+
+    <section class="card">
+      <h2>2) Lieferantenliste erstellen</h2>
+      <table class="grid" id="lieferanten-table">
+        <thead>
+          <tr>
+            <th style="width:19%">Lieferant</th>
+            <th style="width:45%">Sortimentsbreite (unbegrenzt)</th>
+            <th style="width:12%">Lieferpauschale</th>
+            <th style="width:12%">Entladungskosten</th>
+            <th style="width:6%">Aktion</th>
+          </tr>
+        </thead>
+        <tbody id="lieferanten-body"></tbody>
+      </table>
+
+      <div class="toolbar">
+        <button class="btn-secondary" id="add-lieferant-row" type="button">+ Lieferant</button>
+        <button class="btn-primary" id="download-lieferanten" type="button">Lieferanten CSV erstellen</button>
+      </div>
+      <div class="hint">
+        Sortimentsbreite in jeder Zeile mit Komma, Semikolon oder Pipe trennen.
+        Beispiel: <code>Baustahl; Flachstahl; S235; EN 10025 | Winkelstahl</code>
+      </div>
+      <div class="hint">
+        CSV-Header: <code>Lieferant,Sortimentsbreite,Lieferpauschale,Entladungskosten</code>
+      </div>
+      <div class="status" id="lieferanten-status"></div>
+    </section>
+
+    <section class="card">
+      <h2>3) KP1-Zuordnung menschenfreundlich bearbeiten</h2>
+      <p class="hint">
+        Links steht die vollständige Tabelle mit allen Feldern. Rechts wählst du je Position die Lieferanten für
+        <code>zuordnung_quick</code>. Rohes <code>|</code>-Format bleibt nur im Expertenbereich.
+      </p>
+
+      <div class="kp1-shell">
+        <div class="kp1-left">
+          <div class="table-scroll">
+            <table class="grid" id="zuordnung-table">
+              <thead>
+                <tr>
+                  <th style="width:5%">Pos.</th>
+                  <th style="width:14%">Artikelbezeichnung</th>
+                  <th style="width:6%">Menge</th>
+                  <th style="width:10%">Werkstoff</th>
+                  <th style="width:9%">Norm</th>
+                  <th style="width:8%">Pruefzeugnis</th>
+                  <th style="width:10%">Oberflaecheneigenschaften</th>
+                  <th style="width:12%">Lieferant</th>
+                  <th style="width:12%">Sortimentsbreite</th>
+                  <th style="width:7%">Lieferpauschale</th>
+                  <th style="width:7%">Entladungskosten</th>
+                  <th style="width:10%">Status</th>
+                  <th style="width:4%">Aktion</th>
+                </tr>
+              </thead>
+              <tbody id="zuordnung-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <aside class="kp1-right">
+          <div class="panel">
+            <h3>Daten Laden</h3>
+            <p class="hint">
+              Inhalt aus dem n8n-Feld <code>zuordnungsmuster</code> einfügen und laden. Danach alles direkt in der Tabelle anpassen.
+            </p>
+            <textarea
+              id="zuordnungsmuster-input"
+              class="mono small"
+              placeholder="Positionsnummer|Artikelbezeichnung|Menge|Werkstoff|Norm|Pruefzeugnis|Oberflaecheneigenschaften|Lieferant|Sortimentsbreite|Lieferpauschale|Entladungskosten"
+            ></textarea>
+            <div class="toolbar">
+              <button class="btn-secondary" id="load-zuordnung" type="button">Muster laden</button>
+              <button class="btn-secondary" id="add-zuordnung-row" type="button">+ Zeile</button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Schnellzuordnung</h3>
+            <p class="hint">
+              Je Position Lieferanten anhaken. Wenn in der Tabelle ein Lieferant vergessen wurde, ergänzt das Tool ihn beim Erzeugen automatisch.
+            </p>
+            <div id="quick-editor" class="quick-list"></div>
+            <div class="toolbar">
+              <button class="btn-primary" id="build-zuordnung" type="button">Ergebnis erzeugen</button>
+              <button class="btn-primary" id="copy-zuordnung-quick" type="button">Quick kopieren</button>
+              <button class="btn-primary" id="copy-zuordnung" type="button">Muster kopieren</button>
+            </div>
+          </div>
+
+          <details class="expert">
+            <summary>Expertenansicht: Rohformat und Copy/Paste</summary>
+            <div class="hint">Ausgabeformat für n8n (<code>zuordnungsmuster</code>):</div>
+            <textarea id="zuordnungsmuster-output" class="mono small" readonly></textarea>
+            <div class="hint">Kompaktformat für n8n (<code>zuordnung_quick</code>):</div>
+            <textarea id="zuordnungquick-output" class="mono small" readonly></textarea>
+          </details>
+        </aside>
+      </div>
+
+      <div class="status" id="zuordnung-status"></div>
+    </section>
+  </div>
+
+  <script>
+    function csvEscape(value) {
+      const raw = value == null ? "" : String(value);
+      const escaped = raw.replace(/"/g, '""');
+      return '"' + escaped + '"';
+    }
+
+    function downloadCsv(filename, headers, rows) {
+      const lines = [];
+      lines.push(headers.join(","));
+      for (const row of rows) {
+        lines.push(row.map(csvEscape).join(","));
+      }
+      const content = "\ufeff" + lines.join("\n");
+      const blob = new Blob([content], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      URL.revokeObjectURL(link.href);
+      link.remove();
+    }
+
+    function removeRow(button) {
+      const tr = button.closest("tr");
+      const tbody = tr.parentElement;
+      tr.remove();
+      if (!tbody.querySelector("tr")) {
+        if (tbody.id === "stueckliste-body") addStuecklisteRow();
+        if (tbody.id === "lieferanten-body") addLieferantenRow();
+      }
+    }
+
+    function addStuecklisteRow(data = {}) {
+      const tbody = document.getElementById("stueckliste-body");
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td><input data-key="Artikelbezeichnung" value="${data.Artikelbezeichnung || ""}" placeholder="z. B. Flachstahl 40x5" /></td>
+        <td><input data-key="Menge" type="number" min="0" step="1" value="${data.Menge || ""}" placeholder="10" /></td>
+        <td><input data-key="Werkstoff" value="${data.Werkstoff || ""}" placeholder="z. B. S235" /></td>
+        <td><input data-key="Norm" value="${data.Norm || ""}" placeholder="z. B. EN 10025" /></td>
+        <td>
+          <select data-key="Pruefzeugnis">
+            <option value="nein">nein</option>
+            <option value="ja">ja</option>
+          </select>
+        </td>
+        <td><input data-key="Oberflaeche" value="${data.Oberflaeche || ""}" placeholder="z. B. blank" /></td>
+        <td class="row-actions"><button type="button" class="btn-danger">X</button></td>
+      `;
+      tr.querySelector('select[data-key="Pruefzeugnis"]').value = data.Pruefzeugnis || "nein";
+      tr.querySelector(".btn-danger").addEventListener("click", function () { removeRow(this); });
+      tbody.appendChild(tr);
+    }
+
+    function addLieferantenRow(data = {}) {
+      const tbody = document.getElementById("lieferanten-body");
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td><input data-key="Lieferant" value="${data.Lieferant || ""}" placeholder="z. B. Stahl-Meier GmbH" /></td>
+        <td>
+          <textarea data-key="Sortimentsbreite" placeholder="z. B. Baustahl, Flachstahl, S235, EN 10025">${data.Sortimentsbreite || ""}</textarea>
+        </td>
+        <td><input data-key="Lieferpauschale" type="number" min="0" step="0.01" value="${data.Lieferpauschale || ""}" placeholder="45" /></td>
+        <td><input data-key="Entladungskosten" type="number" min="0" step="0.01" value="${data.Entladungskosten || ""}" placeholder="20" /></td>
+        <td class="row-actions"><button type="button" class="btn-danger">X</button></td>
+      `;
+      tr.querySelector(".btn-danger").addEventListener("click", function () { removeRow(this); });
+      tbody.appendChild(tr);
+    }
+
+    function getRowData(tr, keys) {
+      const out = {};
+      for (const key of keys) {
+        const el = tr.querySelector(`[data-key="${key}"]`);
+        out[key] = (el ? el.value : "").trim();
+      }
+      return out;
+    }
+
+    function buildStuecklisteCsv() {
+      const rows = Array.from(document.querySelectorAll("#stueckliste-body tr"));
+      const data = rows
+        .map((tr) => getRowData(tr, ["Artikelbezeichnung", "Menge", "Werkstoff", "Norm", "Pruefzeugnis", "Oberflaeche"]))
+        .filter((r) => r.Artikelbezeichnung || r.Werkstoff || r.Norm || r.Menge);
+
+      if (!data.length) {
+        document.getElementById("stueckliste-status").textContent = "Keine Positionen vorhanden.";
+        return;
+      }
+
+      const csvRows = data.map((r) => [
+        r.Artikelbezeichnung,
+        r.Menge,
+        r.Werkstoff,
+        r.Norm,
+        r.Pruefzeugnis || "nein",
+        r.Oberflaeche,
+      ]);
+
+      const filename = "stueckliste_custom.csv";
+      downloadCsv(filename, ["Artikelbezeichnung", "Menge", "Werkstoff", "Norm", "Pruefzeugnis", "Oberflaeche"], csvRows);
+      document.getElementById("stueckliste-status").textContent = `Datei erstellt: ${filename} (${csvRows.length} Positionen)`;
+    }
+
+    function cleanSortimentsbreite(raw) {
+      return raw
+        .split(/[\n,;|]/)
+        .map((v) => v.trim())
+        .filter(Boolean)
+        .join(" | ");
+    }
+
+    function buildLieferantenCsv() {
+      const rows = Array.from(document.querySelectorAll("#lieferanten-body tr"));
+      const data = rows
+        .map((tr) => getRowData(tr, ["Lieferant", "Sortimentsbreite", "Lieferpauschale", "Entladungskosten"]))
+        .filter((r) => r.Lieferant || r.Sortimentsbreite || r.Lieferpauschale || r.Entladungskosten)
+        .map((r) => ({ ...r, Sortimentsbreite: cleanSortimentsbreite(r.Sortimentsbreite) }));
+
+      if (!data.length) {
+        document.getElementById("lieferanten-status").textContent = "Keine Lieferanten vorhanden.";
+        return;
+      }
+
+      const csvRows = data.map((r) => [
+        r.Lieferant,
+        r.Sortimentsbreite,
+        r.Lieferpauschale,
+        r.Entladungskosten,
+      ]);
+
+      const filename = "lieferanten_custom.csv";
+      downloadCsv(filename, ["Lieferant", "Sortimentsbreite", "Lieferpauschale", "Entladungskosten"], csvRows);
+      document.getElementById("lieferanten-status").textContent = `Datei erstellt: ${filename} (${csvRows.length} Lieferanten)`;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll("\"", "&quot;");
+    }
+
+    function toMoney(value) {
+      const n = Number(String(value ?? "").replace(",", "."));
+      return Number.isFinite(n) ? n.toFixed(2) : "0.00";
+    }
+
+    function statusFromLieferant(lieferant) {
+      return String(lieferant ?? "").trim() ? "zugeordnet" : "kein passender Lieferant";
+    }
+
+    function normalizeSupplier(value) {
+      return String(value ?? "").trim();
+    }
+
+    function supplierKey(value) {
+      return normalizeSupplier(value).toLowerCase();
+    }
+
+    function sortPosValues(a, b) {
+      const aa = String(a ?? "").trim();
+      const bb = String(b ?? "").trim();
+      return aa.localeCompare(bb, "de", { numeric: true, sensitivity: "base" });
+    }
+
+    function readZuordnungRowsFromTable() {
+      return Array.from(document.querySelectorAll("#zuordnung-body tr")).map((tr) =>
+        getRowData(tr, [
+          "Pos",
+          "Artikelbezeichnung",
+          "Menge",
+          "Werkstoff",
+          "Norm",
+          "Pruefzeugnis",
+          "Oberflaecheneigenschaften",
+          "Lieferant",
+          "Sortimentsbreite",
+          "Lieferpauschale",
+          "Entladungskosten",
+          "Status",
+        ])
+      );
+    }
+
+    function groupRowsByPos(rows) {
+      const out = new Map();
+      for (const row of rows) {
+        const pos = String(row.Pos ?? "").trim();
+        if (!pos) continue;
+        if (!out.has(pos)) {
+          out.set(pos, {
+            pos,
+            artikel: String(row.Artikelbezeichnung ?? "").trim(),
+            menge: String(row.Menge ?? "").trim(),
+            werkstoff: String(row.Werkstoff ?? "").trim(),
+            rows: [],
+            supplierOptions: new Map(),
+          });
+        }
+        const entry = out.get(pos);
+        entry.rows.push(row);
+        const supplier = normalizeSupplier(row.Lieferant);
+        if (supplier) entry.supplierOptions.set(supplierKey(supplier), supplier);
+      }
+      return out;
+    }
+
+    function splitSupplierList(raw) {
+      return String(raw ?? "")
+        .split(/[\n,;|]/)
+        .map((v) => normalizeSupplier(v))
+        .filter(Boolean);
+    }
+
+    function getQuickSelectionState() {
+      const state = new Map();
+      const cards = document.querySelectorAll("#quick-editor .quick-card");
+
+      for (const card of cards) {
+        const pos = String(card.dataset.pos ?? "").trim();
+        if (!pos) continue;
+
+        const selected = [];
+        card.querySelectorAll('input[data-role="quick-choice"]:checked').forEach((el) => {
+          const name = normalizeSupplier(el.value);
+          if (name) selected.push(name);
+        });
+
+        const manualInput = card.querySelector('[data-role="quick-manual"]');
+        const manualNames = splitSupplierList(manualInput ? manualInput.value : "");
+        for (const name of manualNames) selected.push(name);
+
+        const dedup = [];
+        const seen = new Set();
+        for (const name of selected) {
+          const key = supplierKey(name);
+          if (!key || seen.has(key)) continue;
+          seen.add(key);
+          dedup.push(name);
+        }
+        state.set(pos, dedup);
+      }
+
+      return state;
+    }
+
+    function renderQuickEditor(preferredState = null) {
+      const rows = readZuordnungRowsFromTable();
+      const grouped = groupRowsByPos(rows);
+      const container = document.getElementById("quick-editor");
+      const remembered = preferredState || getQuickSelectionState();
+
+      container.innerHTML = "";
+      if (!grouped.size) {
+        container.innerHTML = '<div class="hint">Noch keine Positionsdaten vorhanden.</div>';
+        return;
+      }
+
+      const posList = Array.from(grouped.keys()).sort(sortPosValues);
+      for (const pos of posList) {
+        const info = grouped.get(pos);
+        const selected = remembered.get(pos) || [];
+        const selectedSet = new Set(selected.map((name) => supplierKey(name)));
+        const options = Array.from(info.supplierOptions.values()).sort((a, b) =>
+          a.localeCompare(b, "de", { sensitivity: "base" })
+        );
+        const extraManual = selected.filter((name) => !info.supplierOptions.has(supplierKey(name)));
+
+        const card = document.createElement("div");
+        card.className = "quick-card";
+        card.dataset.pos = pos;
+
+        const optionHtml = options.length
+          ? options
+              .map((name) => {
+                const checked = selectedSet.has(supplierKey(name)) ? "checked" : "";
+                return `
+                  <label>
+                    <input type="checkbox" data-role="quick-choice" value="${escapeHtml(name)}" ${checked} />
+                    <span>${escapeHtml(name)}</span>
+                  </label>
+                `;
+              })
+              .join("")
+          : '<div class="hint">Keine Lieferanten in der Tabelle für diese Position gefunden.</div>';
+
+        card.innerHTML = `
+          <div class="quick-title">Pos ${escapeHtml(pos)}</div>
+          <div class="quick-sub">
+            ${escapeHtml(info.artikel || "Unbenannt")} · Menge ${escapeHtml(info.menge || "-")} · ${escapeHtml(info.werkstoff || "-")}
+          </div>
+          <div class="quick-options">${optionHtml}</div>
+          <input
+            class="quick-manual"
+            data-role="quick-manual"
+            placeholder="Weitere Lieferanten (Komma-getrennt, optional)"
+            value="${escapeHtml(extraManual.join(", "))}"
+          />
+        `;
+
+        container.appendChild(card);
+      }
+    }
+
+    let quickRefreshTimer = null;
+    function scheduleQuickEditorRefresh() {
+      const remembered = getQuickSelectionState();
+      if (quickRefreshTimer) clearTimeout(quickRefreshTimer);
+      quickRefreshTimer = setTimeout(() => {
+        quickRefreshTimer = null;
+        renderQuickEditor(remembered);
+      }, 60);
+    }
+
+    function nextZuordnungPos() {
+      const values = Array.from(document.querySelectorAll('#zuordnung-body [data-key="Pos"]'))
+        .map((el) => Number.parseInt(el.value, 10))
+        .filter((n) => Number.isInteger(n) && n > 0);
+      return values.length ? Math.max(...values) + 1 : 1;
+    }
+
+    function addZuordnungRow(data = {}) {
+      const tbody = document.getElementById("zuordnung-body");
+      const posRaw = Number.parseInt(String(data.Pos ?? data.pos ?? ""), 10);
+      const pos = Number.isInteger(posRaw) && posRaw > 0 ? posRaw : nextZuordnungPos();
+      const lieferant = String(data.Lieferant ?? "").trim();
+      const status = String(data.Status ?? statusFromLieferant(lieferant));
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td><input data-key="Pos" type="number" readonly value="${escapeHtml(pos)}" /></td>
+        <td><input data-key="Artikelbezeichnung" value="${escapeHtml(data.Artikelbezeichnung || "")}" /></td>
+        <td><input data-key="Menge" value="${escapeHtml(data.Menge || "")}" /></td>
+        <td><input data-key="Werkstoff" value="${escapeHtml(data.Werkstoff || "")}" /></td>
+        <td><input data-key="Norm" value="${escapeHtml(data.Norm || "")}" /></td>
+        <td><input data-key="Pruefzeugnis" value="${escapeHtml(data.Pruefzeugnis || "")}" /></td>
+        <td><input data-key="Oberflaecheneigenschaften" value="${escapeHtml(data.Oberflaecheneigenschaften || "")}" /></td>
+        <td><input data-key="Lieferant" value="${escapeHtml(lieferant)}" /></td>
+        <td><textarea data-key="Sortimentsbreite">${escapeHtml(data.Sortimentsbreite || "")}</textarea></td>
+        <td><input data-key="Lieferpauschale" value="${escapeHtml(toMoney(data.Lieferpauschale || 0))}" /></td>
+        <td><input data-key="Entladungskosten" value="${escapeHtml(toMoney(data.Entladungskosten || 0))}" /></td>
+        <td><input data-key="Status" readonly value="${escapeHtml(status)}" /></td>
+        <td class="row-actions"><button type="button" class="btn-danger">X</button></td>
+      `;
+
+      const lieferantInput = tr.querySelector('[data-key="Lieferant"]');
+      const statusInput = tr.querySelector('[data-key="Status"]');
+      lieferantInput.addEventListener("input", () => {
+        statusInput.value = statusFromLieferant(lieferantInput.value);
+        scheduleQuickEditorRefresh();
+      });
+
+      const watchKeys = ["Pos", "Artikelbezeichnung", "Menge", "Werkstoff", "Lieferant"];
+      for (const key of watchKeys) {
+        const el = tr.querySelector(`[data-key="${key}"]`);
+        if (!el) continue;
+        el.addEventListener("input", scheduleQuickEditorRefresh);
+        el.addEventListener("change", scheduleQuickEditorRefresh);
+      }
+
+      tr.querySelector(".btn-danger").addEventListener("click", function () {
+        removeRow(this);
+        if (!document.querySelector("#zuordnung-body tr")) addZuordnungRow();
+        scheduleQuickEditorRefresh();
+      });
+
+      tbody.appendChild(tr);
+      scheduleQuickEditorRefresh();
+    }
+
+    function parseZuordnungLine(line) {
+      const parts = line.split("|").map((p) => p.trim());
+      if (parts.length < 11) return null;
+      return {
+        Pos: parts[0],
+        Artikelbezeichnung: parts[1],
+        Menge: parts[2],
+        Werkstoff: parts[3],
+        Norm: parts[4],
+        Pruefzeugnis: parts[5],
+        Oberflaecheneigenschaften: parts[6],
+        Lieferant: parts[7],
+        Sortimentsbreite: parts.slice(8, -2).join("|"),
+        Lieferpauschale: parts[parts.length - 2],
+        Entladungskosten: parts[parts.length - 1],
+      };
+    }
+
+    function loadZuordnungFromText() {
+      const raw = document.getElementById("zuordnungsmuster-input").value;
+      const lines = raw
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter(Boolean);
+
+      const tbody = document.getElementById("zuordnung-body");
+      tbody.innerHTML = "";
+
+      let imported = 0;
+      for (const line of lines) {
+        if (line.toLowerCase().startsWith("positionsnummer|")) continue;
+        const row = parseZuordnungLine(line);
+        if (!row) continue;
+        addZuordnungRow(row);
+        imported += 1;
+      }
+
+      if (!imported) addZuordnungRow();
+      document.getElementById("zuordnung-status").textContent = imported
+        ? `${imported} Zeilen aus Muster geladen.`
+        : "Kein gueltiges Muster erkannt. Leere Tabelle gestartet.";
+      renderQuickEditor();
+    }
+
+    function buildZuordnungsmusterFromTable() {
+      const baseRows = readZuordnungRowsFromTable();
+      const grouped = groupRowsByPos(baseRows);
+      const quickSelections = getQuickSelectionState();
+      const lines = [
+        "Positionsnummer|Artikelbezeichnung|Menge|Werkstoff|Norm|Pruefzeugnis|Oberflaecheneigenschaften|Lieferant|Sortimentsbreite|Lieferpauschale|Entladungskosten",
+      ];
+      const quickMap = new Map();
+
+      const sortedPos = Array.from(grouped.keys()).sort(sortPosValues);
+      for (const pos of sortedPos) {
+        const entry = grouped.get(pos);
+        const rows = entry.rows;
+        const template = rows[0] || {};
+        const selected = quickSelections.get(pos) || [];
+
+        let effectiveRows = [];
+
+        if (selected.length) {
+          for (const supplierName of selected) {
+            const key = supplierKey(supplierName);
+            const match = rows.find((r) => supplierKey(r.Lieferant) === key);
+            const basis = match || template;
+            const row = {
+              ...basis,
+              Pos: pos,
+              Lieferant: supplierName,
+              Status: statusFromLieferant(supplierName),
+            };
+            effectiveRows.push(row);
+          }
+        } else {
+          effectiveRows = rows
+            .filter((r) => normalizeSupplier(r.Lieferant))
+            .map((r) => ({ ...r, Pos: pos, Status: statusFromLieferant(r.Lieferant) }));
+          if (!effectiveRows.length) {
+            effectiveRows = [
+              {
+                ...template,
+                Pos: pos,
+                Lieferant: "",
+                Status: "kein passender Lieferant",
+              },
+            ];
+          }
+        }
+
+        for (const row of effectiveRows) {
+          const line = [
+            row.Pos || "",
+            row.Artikelbezeichnung || "",
+            row.Menge || "",
+            row.Werkstoff || "",
+            row.Norm || "",
+            row.Pruefzeugnis || "",
+            row.Oberflaecheneigenschaften || "",
+            row.Lieferant || "",
+            String(row.Sortimentsbreite || "").replaceAll("\n", " ").trim(),
+            toMoney(row.Lieferpauschale || 0),
+            toMoney(row.Entladungskosten || 0),
+          ].join("|");
+          lines.push(line);
+        }
+
+        if (!quickMap.has(pos)) quickMap.set(pos, new Set());
+        const sourceNames = selected.length
+          ? selected
+          : effectiveRows.map((r) => normalizeSupplier(r.Lieferant)).filter(Boolean);
+        for (const name of sourceNames) {
+          if (name) quickMap.get(pos).add(name);
+        }
+      }
+
+      const output = lines.join("\n");
+      const quickLines = ["Positionsnummer|Lieferant1,Lieferant2,Lieferant3"];
+      const quickPos = Array.from(quickMap.keys()).sort(sortPosValues);
+      for (const pos of quickPos) {
+        const names = Array.from(quickMap.get(pos).values()).join(",");
+        quickLines.push(`${pos}|${names}`);
+      }
+      const quickOutput = quickLines.join("\n");
+
+      document.getElementById("zuordnungsmuster-output").value = output;
+      document.getElementById("zuordnungquick-output").value = quickOutput;
+      document.getElementById("zuordnung-status").textContent =
+        `Zuordnung erzeugt: ${lines.length - 1} Zeilen. Fehlende Lieferanten wurden pro Position aus der Schnellzuordnung ergänzt.`;
+      return output;
+    }
+
+    async function copyZuordnungsmuster() {
+      const output = buildZuordnungsmusterFromTable();
+      try {
+        await navigator.clipboard.writeText(output);
+        document.getElementById("zuordnung-status").textContent = "zuordnungsmuster in Zwischenablage kopiert.";
+      } catch {
+        document.getElementById("zuordnung-status").textContent = "Kopieren nicht erlaubt. Bitte Feld manuell kopieren.";
+      }
+    }
+
+    async function copyZuordnungQuick() {
+      buildZuordnungsmusterFromTable();
+      const quickOutput = document.getElementById("zuordnungquick-output").value;
+      try {
+        await navigator.clipboard.writeText(quickOutput);
+        document.getElementById("zuordnung-status").textContent = "zuordnung_quick in Zwischenablage kopiert.";
+      } catch {
+        document.getElementById("zuordnung-status").textContent = "Kopieren nicht erlaubt. Bitte Feld manuell kopieren.";
+      }
+    }
+
+    document.getElementById("add-stueckliste-row").addEventListener("click", () => addStuecklisteRow());
+    document.getElementById("download-stueckliste").addEventListener("click", buildStuecklisteCsv);
+    document.getElementById("add-lieferant-row").addEventListener("click", () => addLieferantenRow());
+    document.getElementById("download-lieferanten").addEventListener("click", buildLieferantenCsv);
+    document.getElementById("load-zuordnung").addEventListener("click", loadZuordnungFromText);
+    document.getElementById("add-zuordnung-row").addEventListener("click", () => addZuordnungRow());
+    document.getElementById("build-zuordnung").addEventListener("click", buildZuordnungsmusterFromTable);
+    document.getElementById("copy-zuordnung").addEventListener("click", copyZuordnungsmuster);
+    document.getElementById("copy-zuordnung-quick").addEventListener("click", copyZuordnungQuick);
+    document.getElementById("quick-editor").addEventListener("change", () => {
+      document.getElementById("zuordnung-status").textContent =
+        "Schnellzuordnung geändert. Mit 'Ergebnis erzeugen' oder 'kopieren' wird automatisch aktualisiert.";
+    });
+    document.getElementById("quick-editor").addEventListener("input", () => {
+      document.getElementById("zuordnung-status").textContent =
+        "Schnellzuordnung geändert. Mit 'Ergebnis erzeugen' oder 'kopieren' wird automatisch aktualisiert.";
+    });
+
+    addStuecklisteRow({
+      Artikelbezeichnung: "Flachstahl 40x5",
+      Menge: "10",
+      Werkstoff: "S235",
+      Norm: "EN 10025",
+      Pruefzeugnis: "nein",
+      Oberflaeche: "blank",
+    });
+    addStuecklisteRow({
+      Artikelbezeichnung: "Rohr 60.3x3.2",
+      Menge: "5",
+      Werkstoff: "1.4301 Edelstahl",
+      Norm: "EN 10217-7",
+      Pruefzeugnis: "ja",
+      Oberflaeche: "gebeizt",
+    });
+
+    addLieferantenRow({
+      Lieferant: "Stahl-Meier GmbH",
+      Sortimentsbreite: "Baustahl, Flachstahl, S235, EN 10025, Winkelstahl",
+      Lieferpauschale: "45",
+      Entladungskosten: "20",
+    });
+    addLieferantenRow({
+      Lieferant: "Edelstahl-Mueller",
+      Sortimentsbreite: "Edelstahl, 1.4301, Rohr, EN 10217-7, Inox",
+      Lieferpauschale: "60",
+      Entladungskosten: "25",
+    });
+
+    addZuordnungRow({
+      Pos: 1,
+      Artikelbezeichnung: "Flachstahl 40x5",
+      Menge: "10",
+      Werkstoff: "S235",
+      Norm: "EN 10025",
+      Pruefzeugnis: "nein",
+      Oberflaecheneigenschaften: "blank",
+      Lieferant: "Stahl-Meier GmbH",
+      Sortimentsbreite: "Baustahl | Flachstahl | S235 | EN 10025",
+      Lieferpauschale: "45.00",
+      Entladungskosten: "20.00",
+      Status: "zugeordnet",
+    });
+
+    renderQuickEditor();
+    buildZuordnungsmusterFromTable();
+  </script>
+</body>
+</html>
