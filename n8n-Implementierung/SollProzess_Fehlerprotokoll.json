@@ -1,0 +1,89 @@
+{
+  "name": "SollProzess Fehlerprotokoll",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "67aec406-6641-4492-9707-8d47dee84be3",
+      "name": "Error Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const payload = $json ?? {};\nconst execution = payload.execution ?? {};\nconst workflow = payload.workflow ?? {};\nconst error = execution.error ?? payload.error ?? {};\nconst now = new Date().toISOString();\n\nconst esc = (value = '') => String(value)\n  .replaceAll('&', '&amp;')\n  .replaceAll('<', '&lt;')\n  .replaceAll('>', '&gt;')\n  .replaceAll('\"', '&quot;');\n\nconst shortText = (value, limit = 6000) => {\n  if (value === undefined || value === null || value === '') return '';\n  const text = typeof value === 'string' ? value : JSON.stringify(value, null, 2);\n  const compact = text.replace(/\\n{4,}/g, '\\n\\n\\n').trim();\n  return compact.length > limit ? compact.slice(0, limit) + '\\n... (' + compact.length + ' Zeichen gesamt)' : compact;\n};\n\nconst executionId = String(execution.id ?? '').trim();\nconst workflowName = String(workflow.name ?? payload.workflowName ?? 'Unbekannter Workflow').trim();\nconst workflowId = String(workflow.id ?? payload.workflowId ?? '').trim();\nconst lastNode = String(execution.lastNodeExecuted ?? execution.lastNode ?? '').trim();\nconst message = String(error.message ?? error.description ?? payload.message ?? 'Unbekannter Fehler').trim();\nconst stack = String(error.stack ?? '').trim();\nconst mode = String(execution.mode ?? '').trim();\nconst url = String(execution.url ?? '').trim();\nconst retryOf = String(execution.retryOf ?? '').trim();\nconst fileName = 'SollProzess_Fehlerprotokoll_' + (executionId || now.replace(/[:.]/g, '-')) + '.md';\n\nconst lines = [];\nlines.push('# Fehlerprotokoll SollProzess');\nlines.push('');\nlines.push('Erstellt: ' + now);\nlines.push('Workflow: ' + workflowName + (workflowId ? ' (' + workflowId + ')' : ''));\nif (executionId) lines.push('Execution-ID: ' + executionId);\nif (url) lines.push('Execution-URL: ' + url);\nif (mode) lines.push('Ausführungsmodus: ' + mode);\nif (retryOf) lines.push('Retry von Execution: ' + retryOf);\nif (lastNode) lines.push('Letzter Node / Fehlernode: ' + lastNode);\nlines.push('Status: technischer Fehler');\nlines.push('');\nlines.push('## Fehlermeldung');\nlines.push('');\nlines.push(message || 'Keine Fehlermeldung vorhanden.');\nif (stack) {\n  lines.push('', '## Stacktrace', '', '~~~text', shortText(stack, 10000), '~~~');\n}\nlines.push('', '## Rohdaten Error Trigger', '', '~~~json', shortText(payload, 12000), '~~~');\n\nconst markdown = lines.join('\\n') + '\\n';\nconst html = '<div style=\"font-family:Arial,sans-serif;color:#1f2937;line-height:1.45\">'\n  + '<h2>SollProzess - Fehlerprotokoll</h2>'\n  + '<p>Ein Workflow-Fehler wurde durch den n8n Error Trigger abgefangen. Das Markdown-Protokoll ist angehängt.</p>'\n  + '<p><b>Workflow:</b> ' + esc(workflowName) + '<br>'\n  + '<b>Execution-ID:</b> ' + esc(executionId || 'nicht vorhanden') + '<br>'\n  + '<b>Fehlernode:</b> ' + esc(lastNode || 'nicht vorhanden') + '<br>'\n  + '<b>Fehler:</b> ' + esc(message || 'Unbekannter Fehler') + '</p>'\n  + (url ? '<p><a href=\"' + esc(url) + '\">Execution in n8n öffnen</a></p>' : '')\n  + '</div>';\n\nreturn [{\n  json: {\n    workflow_id: workflowId,\n    workflow_name: workflowName,\n    execution_id: executionId,\n    execution_url: url,\n    error_node: lastNode,\n    error_message: message,\n    fehler_protokoll_markdown: markdown,\n    fehler_protokoll_dateiname: fileName,\n    fehler_protokoll_mail_html: html,\n  },\n  binary: {\n    fehler_protokoll: {\n      data: Buffer.from(markdown, 'utf8').toString('base64'),\n      mimeType: 'text/markdown',\n      fileName,\n    },\n  },\n}];"
+      },
+      "id": "61c52993-d76e-45ad-832c-28772438b027",
+      "name": "Fehlerprotokoll erstellen",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "unicedric@gmail.com",
+        "toEmail": "cedric.arnhold@student.htw-berlin.de",
+        "subject": "=SollProzess Fehlerprotokoll – {{ $json.error_node || \"Fehler\" }} – Execution {{ $json.execution_id || \"ohne-ID\" }}",
+        "html": "={{ $json.fehler_protokoll_mail_html }}",
+        "options": {
+          "appendAttribution": false,
+          "attachments": "fehler_protokoll"
+        }
+      },
+      "id": "27c292f3-bc20-4d4d-aa8d-eda796ea1825",
+      "name": "Fehlerprotokoll senden",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        480,
+        0
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "XLq6Q69kiGLnuMXI",
+          "name": "SMTP account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Fehlerprotokoll erstellen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fehlerprotokoll erstellen": {
+      "main": [
+        [
+          {
+            "node": "Fehlerprotokoll senden",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "c153ebdd-6746-47d2-8be8-22da1c020983",
+  "meta": {},
+  "id": "fiU8BKrsSdwOGnvI",
+  "tags": []
+}
