@@ -1,0 +1,5 @@
+AnfrageID;Pos;Artikelbezeichnung;Menge;Werkstoff;Norm;Pruefzeugnis;Oberflaecheneigenschaften;Kategorie;Status;Lieferant;Sortimentsbreite;Lieferpauschale;Entladungskosten
+kp1_20260709130459_uvysgo;1;Flachstahl 40x5;10;S235;EN 10025;nein;blank;Flachstahl aus Baustahl;ok;Stahl-Meier GmbH;Baustahl;45.00;20.00
+kp1_20260709130459_uvysgo;1;Flachstahl 40x5;10;S235;EN 10025;nein;blank;Flachstahl aus Baustahl;ok;Stahlhandel-Nord;Baustahl;40.00;25.00
+kp1_20260709130459_uvysgo;2;Rohr 60.3x3.2;5;1.4301 EDELSTAHL;;ja;gebeizt;Rohr aus Edelstahl;offen/prüfpflichtig;Edelstahl-Mueller;Edelstahl;60.00;25.00
+kp1_20260709130459_uvysgo;2;Rohr 60.3x3.2;5;1.4301 EDELSTAHL;;ja;gebeizt;Rohr aus Edelstahl;offen/prüfpflichtig;Inox-Fachhandel;Edelstahl;55.00;30.00

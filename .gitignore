@@ -1,6 +1,10 @@
 ﻿# Lokale Beispielarbeiten nicht versionieren
 Beispielarbeiten/
 src/Quellen/
-*.md
-n8n-Implementierung/testdaten
+n8n-Implementierung/testdaten/Testfallprotokolle.md
 n8n-Implementierung/Analyse des Sollprozess
+n8n-Implementierung/testdaten/lieferant_handelshof_cottbus.csv
+n8n-Implementierung/n8n_Schritt-fuer-Schritt-Anleitung.md
+BPMN Modelle/Schwächenanalyse vom IST-Prozess.md
+BPMN Modelle/Doku-Vergleich_n8n_vs_Zapier.md
+BPMN Modelle/Anforderungskatalog_SOLL.md

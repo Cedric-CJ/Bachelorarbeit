@@ -1,0 +1,3 @@
+AnfrageID;Pos;Artikelbezeichnung;Menge;Werkstoff;Norm;Pruefzeugnis;Oberflaecheneigenschaften;Kategorie;Status;Lieferant;Sortimentsbreite;Lieferpauschale;Entladungskosten
+kp1_20260709142502_3b0sm6;1;Flachstahl 60x8;20;S235;EN 10025;nein;blank;Flachstahl aus Baustahl;ok;Stahl-Meier GmbH;Baustahl;45.00;20.00
+kp1_20260709142502_3b0sm6;1;Flachstahl 60x8;20;S235;EN 10025;nein;blank;Flachstahl aus Baustahl;ok;Stahlhandel-Nord;Baustahl;40.00;25.00

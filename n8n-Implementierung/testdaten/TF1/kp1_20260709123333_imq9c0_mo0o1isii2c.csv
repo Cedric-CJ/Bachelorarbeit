@@ -1,0 +1,7 @@
+AnfrageID;Pos;Artikelbezeichnung;Menge;Werkstoff;Norm;Pruefzeugnis;Oberflaecheneigenschaften;Kategorie;Status;Lieferant;Sortimentsbreite;Lieferpauschale;Entladungskosten
+kp1_20260709123333_imq9c0;1;Flachstahl 40x5;10;S235;EN 10025;nein;blank;Flachstahl aus Baustahl;ok;Stahl-Meier GmbH;Baustahl;45.00;20.00
+kp1_20260709123333_imq9c0;1;Flachstahl 40x5;10;S235;EN 10025;nein;blank;Flachstahl aus Baustahl;ok;Stahlhandel-Nord;Baustahl;40.00;25.00
+kp1_20260709123333_imq9c0;2;Rohr 60.3x3.2;5;1.4301 EDELSTAHL;EN 10217-7;ja;gebeizt;Rohr aus Edelstahl;ok;Edelstahl-Mueller;Edelstahl;60.00;25.00
+kp1_20260709123333_imq9c0;2;Rohr 60.3x3.2;5;1.4301 EDELSTAHL;EN 10217-7;ja;gebeizt;Rohr aus Edelstahl;ok;Inox-Fachhandel;Edelstahl;55.00;30.00
+kp1_20260709123333_imq9c0;3;Winkel 50x50x5;8;S355;EN 10056;nein;verzinkt;Winkelstahl aus Baustahl;ok;Stahl-Meier GmbH;Baustahl;45.00;20.00
+kp1_20260709123333_imq9c0;3;Winkel 50x50x5;8;S355;EN 10056;nein;verzinkt;Winkelstahl aus Baustahl;ok;Stahlhandel-Nord;Baustahl;40.00;25.00

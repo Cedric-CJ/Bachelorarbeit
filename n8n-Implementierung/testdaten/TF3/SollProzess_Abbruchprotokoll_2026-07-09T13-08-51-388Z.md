@@ -1,0 +1,22 @@
+# Durchlaufprotokoll SollProzess
+
+Erstellt: 2026-07-09T13:08:51.388Z
+Finaler Status: abgebrochen
+Abbruchstelle: KP1 Vorgang abgebrochen
+Abbruchgrund: User hat KP1 abgelehnt und als Aktion abbrechen gewählt.
+Protokollierte Debug-Schritte: 0
+Warnungen im Trace: 0
+Fehler im Trace: 0
+
+## Kontext
+- Workflow: SollProzess
+
+## Entscheidung / Abbruchdaten
+- KP1 Entscheidung: ablehnen
+- KP1 Ablehnungsaktion: abbrechen
+- KP1 Ablehnungsgrund: Kein passender Lieferant
+- Status: offen/prüfpflichtig
+
+## Ablaufprotokoll ab Start
+
+Kein debug_trace im aktuellen Item vorhanden. Der Abbruch wurde trotzdem mit dem aktuellen Workflow-Kontext dokumentiert.
