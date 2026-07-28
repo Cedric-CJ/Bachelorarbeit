@@ -1,0 +1,5 @@
+Artefakt: n8n-Proof-of-Concept der Bachelorarbeit
+Version: 1.0.0
+Git-Tag: n8n-poc-abgabe-2026-07-16
+Erstellungsdatum: 2026-07-16
+Basis-Commit vor dem Artefakt-Release: bd8933cfc0ad68b9dc2d3455c69001aa3b303b95

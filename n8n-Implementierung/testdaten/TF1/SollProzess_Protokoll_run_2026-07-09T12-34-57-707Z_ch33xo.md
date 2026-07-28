@@ -6,7 +6,7 @@ Start: 2026-07-09T12:34:57.707Z
 Debug-Datei: /home/cedric/Downloads/n8n-debug-cache/SollProzess_run_2026-07-09T12-34-57-707Z_ch33xo.md
 Debug-Dateihinweis: Debug-Datei wurde nicht geschrieben, weil n8n Code-Nodes fs/path nicht freigegeben haben. debug_trace wird vollständig im Workflow weitergeführt. Für echte Dateien n8n mit NODE_FUNCTION_ALLOW_BUILTIN=fs,path neu starten oder einen Read/Write-Files-Node ergänzen.
 Finaler AF15-Status: korrekt
-AF15-Status vor User-Entscheidung: nicht korrekt
+AF15-Status vor Entscheidung der verantwortlichen Person: nicht korrekt
 Protokollierte Debug-Schritte: 9
 
 ## Kurzfassung des Prozesslaufs
@@ -254,7 +254,7 @@ Protokollierte Debug-Schritte: 9
 
 # AF15 Protokoll – Auftragsbestätigung
 Zeitpunkt: 2026-07-09T13:00:31.075Z
-Gesamtstatus vor User-Entscheidung: Klärung erforderlich
+Gesamtstatus vor Entscheidung der verantwortlichen Person: Klärung erforderlich
 Fachlicher Status: abweichend
 KI-Prüfung automatische Vollständigkeit: 100 %
 Hinweis: Die Vollständigkeit bewertet erkannte Datenfelder. Fachliche Abweichungen werden separat ausgewiesen.
@@ -275,7 +275,7 @@ Debug-Protokoll: /home/cedric/Downloads/n8n-debug-cache/SollProzess_run_2026-07-
 - Begründung: Alle relevante Informationen sind in der Bestätigung ausdrücklich oder sehr eindeutig bestätigt.
 - Details: Pos 1: Position in Auftragsbestätigung, aber nicht in Bestellung. | Pos 2: Position in Bestellung, aber nicht in der Auftragsbestätigung erkannt.
 
-## User-Entscheidung
+## Entscheidung der verantwortlichen Person
 - Zeitpunkt: 2026-07-09T13:02:38.101Z
 - Entscheidung: Abweichung akzeptieren – fortsetzen
 - Interner Entscheidungstyp: korrekt_trotz_hinweis

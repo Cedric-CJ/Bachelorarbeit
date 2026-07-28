@@ -2,42 +2,45 @@
     "git.ignoreLimitWarning": true,
     "latex-workshop.latex.tools": [
         {
-            "name": "latexmk",
+            "name": "latexmk-xelatex",
             "command": "latexmk",
             "args": [
+                "-pdf",
                 "-synctex=1",
                 "-interaction=nonstopmode",
                 "-file-line-error",
-                "-pdf",
                 "-bibtex",
                 "%DOC%"
-            ]
+            ],
+            "cwd": "%DIR%"
         },
         {
-            "name": "pdflatex",
-            "command": "pdflatex",
+            "name": "xelatex",
+            "command": "xelatex",
             "args": [
                 "-synctex=1",
                 "-interaction=nonstopmode",
                 "-file-line-error",
                 "%DOC%"
-            ]
+            ],
+            "cwd": "%DIR%"
         },
         {
             "name": "biber",
             "command": "biber",
-            "args": ["%DOCFILE%"]
+            "args": ["%DOCFILE%"],
+            "cwd": "%DIR%"
         }
     ],
     "latex-workshop.latex.recipes": [
         {
-            "name": "pdflatex → biber → pdflatex × 2",
-            "tools": ["pdflatex", "biber", "pdflatex", "pdflatex"]
+            "name": "XeLaTeX → Biber → XeLaTeX × 2",
+            "tools": ["xelatex", "biber", "xelatex", "xelatex"]
         },
         {
-            "name": "latexmk (biber)",
-            "tools": ["latexmk"]
+            "name": "latexmk (XeLaTeX + Biber)",
+            "tools": ["latexmk-xelatex"]
         }
     ],
-    "latex-workshop.latex.recipe.default": "pdflatex → biber → pdflatex × 2"
+    "latex-workshop.latex.recipe.default": "latexmk (XeLaTeX + Biber)"
 }

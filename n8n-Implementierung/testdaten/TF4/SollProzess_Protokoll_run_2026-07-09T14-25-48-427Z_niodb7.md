@@ -6,7 +6,7 @@ Start: 2026-07-09T14:25:48.427Z
 Debug-Datei: /home/cedric/Downloads/n8n-debug-cache/SollProzess_run_2026-07-09T14-25-48-427Z_niodb7.md
 Debug-Dateihinweis: Debug-Datei wurde nicht geschrieben, weil n8n Code-Nodes fs/path nicht freigegeben haben. debug_trace wird vollständig im Workflow weitergeführt. Für echte Dateien n8n mit NODE_FUNCTION_ALLOW_BUILTIN=fs,path neu starten oder einen Read/Write-Files-Node ergänzen.
 Finaler AF15-Status: korrekt
-AF15-Status vor User-Entscheidung: nicht korrekt
+AF15-Status vor Entscheidung der verantwortlichen Person: nicht korrekt
 Protokollierte Debug-Schritte: 10
 
 ## Kurzfassung des Prozesslaufs
@@ -239,7 +239,7 @@ Protokollierte Debug-Schritte: 10
 
 # AF15 Protokoll – Auftragsbestätigung
 Zeitpunkt: 2026-07-09T14:36:36.618Z
-Gesamtstatus vor User-Entscheidung: Klärung erforderlich
+Gesamtstatus vor Entscheidung der verantwortlichen Person: Klärung erforderlich
 Fachlicher Status: unklar
 KI-Prüfung automatische Vollständigkeit: 0 %
 Hinweis: Die Vollständigkeit bewertet erkannte Datenfelder. Fachliche Abweichungen werden separat ausgewiesen.
@@ -257,7 +257,7 @@ Debug-Protokoll: /home/cedric/Downloads/n8n-debug-cache/SollProzess_run_2026-07-
 ## Warnhinweise
 - Stahlhandel-Nord: Die Positionspreise (Stückpreis und Gesamtpreis) wurden nicht ausdrücklich genannt. Nur der voraussichtliche Gesamtbestellwert wurde erwähnt.
 
-## User-Entscheidung
+## Entscheidung der verantwortlichen Person
 - Zeitpunkt: 2026-07-09T14:38:25.807Z
 - Entscheidung: Abweichung akzeptieren – fortsetzen
 - Interner Entscheidungstyp: korrekt_trotz_hinweis

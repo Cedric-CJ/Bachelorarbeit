@@ -6,7 +6,7 @@ Start: 2026-07-09T14:50:53.756Z
 Debug-Datei: /home/cedric/Downloads/n8n-debug-cache/SollProzess_run_2026-07-09T14-50-53-756Z_puhz0g.md
 Debug-Dateihinweis: Debug-Datei wurde nicht geschrieben, weil n8n Code-Nodes fs/path nicht freigegeben haben. debug_trace wird vollständig im Workflow weitergeführt. Für echte Dateien n8n mit NODE_FUNCTION_ALLOW_BUILTIN=fs,path neu starten oder einen Read/Write-Files-Node ergänzen.
 Finaler AF15-Status: nicht korrekt
-AF15-Status vor User-Entscheidung: nicht korrekt
+AF15-Status vor Entscheidung der verantwortlichen Person: nicht korrekt
 Protokollierte Debug-Schritte: 10
 
 ## Kurzfassung des Prozesslaufs
@@ -239,7 +239,7 @@ Protokollierte Debug-Schritte: 10
 
 # AF15 Protokoll – Auftragsbestätigung
 Zeitpunkt: 2026-07-09T15:02:21.675Z
-Gesamtstatus vor User-Entscheidung: Klärung erforderlich
+Gesamtstatus vor Entscheidung der verantwortlichen Person: Klärung erforderlich
 Fachlicher Status: unklar
 KI-Prüfung automatische Vollständigkeit: 0 %
 Hinweis: Die Vollständigkeit bewertet erkannte Datenfelder. Fachliche Abweichungen werden separat ausgewiesen.
@@ -257,7 +257,7 @@ Debug-Protokoll: /home/cedric/Downloads/n8n-debug-cache/SollProzess_run_2026-07-
 ## Warnhinweise
 - Inox-Fachhandel: Die Bestätigung enthält nur einen Einzelpreis und keine Belastbarkeit der Positionsdetails.
 
-## User-Entscheidung
+## Entscheidung der verantwortlichen Person
 - Zeitpunkt: 2026-07-09T15:04:07.443Z
 - Entscheidung: Nicht korrekt / Klärung erforderlich
 - Interner Entscheidungstyp: klaerung_erforderlich
