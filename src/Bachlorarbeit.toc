@@ -1,44 +1,66 @@
-\contentsline {section}{Kurzfassung (Deutsch)}{i}{section*.1}%
-\contentsline {section}{Abstract (English)}{i}{section*.2}%
-\contentsline {section}{Abbildungsverzeichnis}{iv}{section*.4}%
-\contentsline {section}{Tabellenverzeichnis}{v}{section*.5}%
-\contentsline {section}{Abkürzungsverzeichnis}{vi}{section*.6}%
+\babel@toc {ngerman}{}\relax 
+\contentsline {frontmatter}{Abstract (Deutsch)}{i}{section*.1}%
+\contentsline {frontmatter}{Abstract (English)}{ii}{section*.2}%
+\contentsline {frontmatter}{Abbildungsverzeichnis}{v}{section*.4}%
+\contentsline {frontmatter}{Tabellenverzeichnis}{vi}{section*.5}%
+\contentsline {frontmatter}{Abkürzungsverzeichnis}{vii}{section*.6}%
+\contentsline {frontmatter}{KI-Verzeichnis}{viii}{section*.7}%
 \contentsline {section}{\numberline {1.}Einleitung}{1}{section.1}%
 \contentsline {subsection}{\numberline {1.1.}Motivation und Relevanz}{1}{subsection.1.1}%
-\contentsline {subsection}{\numberline {1.2.}Zielsetzung und Abgrenzung}{1}{subsection.1.2}%
-\contentsline {subsection}{\numberline {1.3.}Forschungsfragen und Aufbau}{1}{subsection.1.3}%
-\contentsline {section}{\numberline {2.}Methodik}{1}{section.2}%
-\contentsline {subsection}{\numberline {2.1.}Design-Science-Ansatz}{1}{subsection.2.1}%
-\contentsline {subsection}{\numberline {2.2.}Erhebung des IST-Prozesses durch Experteninterview}{1}{subsection.2.2}%
-\contentsline {subsection}{\numberline {2.3.}Bewertungsmethodik: Kriterienliste und Nutzwertanalyse}{1}{subsection.2.3}%
-\contentsline {section}{\numberline {3.}Theoretische Grundlagen}{1}{section.3}%
-\contentsline {subsection}{\numberline {3.1.}Low-Code und Workflow-Systeme (BPM/BPA)}{1}{subsection.3.1}%
-\contentsline {subsection}{\numberline {3.2.}Kriterien für automationsgeeignete Prozesse}{2}{subsection.3.2}%
-\contentsline {subsection}{\numberline {3.3.}n8n: Architektur und Einsatzgebiete}{2}{subsection.3.3}%
-\contentsline {subsection}{\numberline {3.4.}Zapier als proprietäre Vergleichslösung}{2}{subsection.3.4}%
-\contentsline {subsection}{\numberline {3.5.}Bewertungs- und Vergleichskriterien}{2}{subsection.3.5}%
-\contentsline {section}{\numberline {4.}Analyse des Praxisfalls}{2}{section.4}%
-\contentsline {subsection}{\numberline {4.1.}Unternehmenskontext}{2}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2.}Prozessabgrenzung und Begründung}{3}{subsection.4.2}%
-\contentsline {subsection}{\numberline {4.3.}Erhebung, Dokumentation und BPMN-Modellierung des IST-Prozesses}{3}{subsection.4.3}%
-\contentsline {subsection}{\numberline {4.4.}Schwachstellen und Anforderungen an den Soll-Prozess}{3}{subsection.4.4}%
-\contentsline {section}{\numberline {5.}Konzept}{3}{section.5}%
-\contentsline {subsection}{\numberline {5.1.}BPMN Soll-Modell}{3}{subsection.5.1}%
-\contentsline {subsection}{\numberline {5.2.}Lösungsarchitektur in n8n}{3}{subsection.5.2}%
-\contentsline {subsection}{\numberline {5.3.}Abgrenzung zur Zapier-Umsetzung}{3}{subsection.5.3}%
-\contentsline {section}{\numberline {6.}Umsetzung}{4}{section.6}%
-\contentsline {subsection}{\numberline {6.1.}Technisches Setup}{4}{subsection.6.1}%
-\contentsline {subsection}{\numberline {6.2.}Prototypische Umsetzung in n8n}{4}{subsection.6.2}%
-\contentsline {subsection}{\numberline {6.3.}Tests und Fehlerbehandlung}{4}{subsection.6.3}%
-\contentsline {section}{\numberline {7.}Evaluation}{4}{section.7}%
-\contentsline {subsection}{\numberline {7.1.}Evaluationsdesign}{4}{subsection.7.1}%
-\contentsline {subsection}{\numberline {7.2.}Ergebnisse der Bewertungskriterien}{4}{subsection.7.2}%
-\contentsline {subsection}{\numberline {7.3.}Nutzwertanalyse: Vergleich n8n und Zapier}{4}{subsection.7.3}%
-\contentsline {subsection}{\numberline {7.4.}Diskussion: Grenzen, Risiken und Übertragbarkeit}{4}{subsection.7.4}%
-\contentsline {section}{\numberline {8.}Fazit und Ausblick}{5}{section.8}%
-\contentsline {subsection}{\numberline {8.1.}Beantwortung der Forschungsfragen}{5}{subsection.8.1}%
-\contentsline {subsection}{\numberline {8.2.}Handlungshinweise für KKU}{5}{subsection.8.2}%
-\contentsline {subsection}{\numberline {8.3.}Ausblick}{5}{subsection.8.3}%
-\contentsline {section}{Literaturverzeichnis}{6}{section*.7}%
-\contentsline {section}{\numberline {A}Anhang}{12}{appendix.A}%
-\contentsline {section}{Eidesstattliche Erklärung}{13}{section*.8}%
+\contentsline {subsection}{\numberline {1.2.}Stand der Forschung}{2}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3.}Zielsetzung und Abgrenzung}{3}{subsection.1.3}%
+\contentsline {subsection}{\numberline {1.4.}Forschungsfragen und Aufbau}{3}{subsection.1.4}%
+\contentsline {section}{\numberline {2.}Methodik}{5}{section.2}%
+\contentsline {subsection}{\numberline {2.1.}Design-Science-Ansatz}{5}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2.}Erhebung des IST-Prozesses durch leitfadengestütztes Interview}{6}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3.}Schwachstellenanalyse, Anforderungen und Evaluation}{6}{subsection.2.3}%
+\contentsline {section}{\numberline {3.}Theoretische Grundlagen}{8}{section.3}%
+\contentsline {subsection}{\numberline {3.1.}Workflow-Systeme und Low-Code-Plattformen}{8}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2.}Kriterien für automatisierungsgeeignete Prozesse}{10}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3.}Architektur und Einsatzgebiete von n8n}{12}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4.}Rahmenbedingungen kleiner Unternehmen}{14}{subsection.3.4}%
+\contentsline {subsection}{\numberline {3.5.}Kriterien zur Bewertung der Prozessautomatisierung}{16}{subsection.3.5}%
+\contentsline {section}{\numberline {4.}Analyse des Praxisfalls}{21}{section.4}%
+\contentsline {subsection}{\numberline {4.1.}Unternehmenskontext}{21}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2.}Prozessabgrenzung und Begründung}{22}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3.}Erhebung, Dokumentation und BPMN-Modellierung des IST-Prozesses}{23}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4.}Schwachstellen und Anforderungen an den SOLL-Prozess}{25}{subsection.4.4}%
+\contentsline {section}{\numberline {5.}Konzept}{29}{section.5}%
+\contentsline {subsection}{\numberline {5.1.}BPMN-SOLL-Modell}{29}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2.}Anforderungskatalog für den SOLL-Prozess}{32}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3.}Lösungsarchitektur in n8n}{33}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4.}Abgrenzung des Proof of Concept vom Produktivbetrieb}{36}{subsection.5.4}%
+\contentsline {section}{\numberline {6.}Umsetzung}{38}{section.6}%
+\contentsline {subsection}{\numberline {6.1.}Technisches Setup}{38}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2.}Prototypische Umsetzung in n8n}{41}{subsection.6.2}%
+\contentsline {paragraph}{Von der Stückliste zur geprüften Datenbasis.}{41}{paragraph*.21}%
+\contentsline {paragraph}{Lieferantenzuordnung mit Korrekturmöglichkeit.}{41}{paragraph*.22}%
+\contentsline {paragraph}{Freigegebene Anfragen und kontrollierte Angebotsübernahme.}{42}{paragraph*.24}%
+\contentsline {paragraph}{Gesamtkostenvergleich als Grundlage für KP2.}{43}{paragraph*.26}%
+\contentsline {paragraph}{Kostenvoranschlag und Kundenentscheidung.}{43}{paragraph*.27}%
+\contentsline {paragraph}{Bestellung, Auftragsbestätigung und Übergabe.}{44}{paragraph*.29}%
+\contentsline {paragraph}{Phasenübergreifende Nachvollziehbarkeit.}{45}{paragraph*.31}%
+\contentsline {subsection}{\numberline {6.3.}Tests und Fehlerbehandlung}{45}{subsection.6.3}%
+\contentsline {section}{\numberline {7.}Evaluation}{48}{section.7}%
+\contentsline {subsection}{\numberline {7.1.}Evaluationsdesign}{48}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2.}Ergebnisse der Testfälle und Bewertungskriterien}{49}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3.}Diskussion der Grenzen, Risiken und Übertragbarkeit}{51}{subsection.7.3}%
+\contentsline {section}{\numberline {8.}Fazit und Ausblick}{54}{section.8}%
+\contentsline {subsection}{\numberline {8.1.}Beantwortung der Forschungsfragen}{54}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2.}Handlungsempfehlungen für KKU}{55}{subsection.8.2}%
+\contentsline {subsection}{\numberline {8.3.}Ausblick}{57}{subsection.8.3}%
+\contentsline {section}{Literaturverzeichnis}{59}{section*.33}%
+\contentsline {section}{\numberline {A}Anhang}{LXIII}{section.A}%
+\contentsline {subsection}{\numberline {A1}Interviewprotokoll}{LXIII}{subsection.A.1}%
+\contentsline {subsection}{\numberline {A2}Vollständige BPMN-Diagramme}{LXXII}{subsection.A.2}%
+\contentsline {subsection}{\numberline {A3}Anforderungskatalog und Bewertungsmaßstab}{LXXV}{subsection.A.3}%
+\contentsline {subsection}{\numberline {A4}FMEA-ähnliche Priorisierung und Restpriorität}{LXXVII}{subsection.A.4}%
+\contentsline {subsection}{\numberline {A5}Herkunft und Begründung der FMEA-ähnlichen Bewertungen}{LXXVIII}{subsection.A.5}%
+\contentsline {subsection}{\numberline {A6}n8n-Workflow-Export}{LXXXI}{subsection.A.6}%
+\contentsline {subsection}{\numberline {A7}Lokales Startskript für n8n und Ollama}{LXXXII}{subsection.A.7}%
+\contentsline {subsection}{\numberline {A8}Testprotokolle TF1 bis TF5}{LXXXIII}{subsection.A.8}%
+\contentsline {subsubsection}{TF1 -- Standarddurchlauf mit vollständiger Stückliste}{LXXXIII}{subsubsection*.78}%
+\contentsline {subsubsection}{TF2 -- Fehlende Norm in einer Stücklistenposition}{LXXXIV}{subsubsection*.86}%
+\contentsline {subsubsection}{TF3 -- Kein passender Lieferant für Titanposition}{LXXXV}{subsubsection*.94}%
+\contentsline {subsubsection}{TF4 -- Zusatzkostenvergleich bei gleichem Stückpreis}{LXXXV}{subsubsection*.102}%
+\contentsline {subsubsection}{TF5 -- Auftragsbestätigung mit absichtlicher Abweichung}{LXXXVI}{subsubsection*.110}%
